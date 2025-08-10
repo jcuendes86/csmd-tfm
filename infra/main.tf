@@ -104,3 +104,60 @@ module "sa-dataflow-worker" {
     module.apis
   ]
 }
+
+// Cuenta de servicio para Cloud Build
+module "sa-cloud-build" {
+  source = "./modules/service-account"
+
+  project_id = var.project_id
+
+  sa_account_id = "cloud-build"
+  sa_display_name = "Cloud Build SA"
+  sa_roles = [
+    "roles/cloudbuild.builds.editor"
+  ]
+
+  depends_on = [
+    module.apis
+  ]
+}
+
+// Creacion del repositorio para la imagen Docker del pipeline de Dataflow
+module "artifact-registry" {
+  source = "./modules/artifact-registry"
+
+  project_id = var.project_id
+  region = var.region
+  artifact_registry_naming = "dataflow-templates-repo"
+
+  depends_on = [
+    module.apis
+  ]
+}
+
+// Creacion del trigger en Cloud Build
+module "cloud-build" {
+  source = "./modules/cloud-build"
+
+  project_id                           = var.project_id
+  region                               = var.region
+
+  cloud_build_trigger_name             = "cb-dataflow-pipeline-image-builder"
+  cloud_build_trigger_filename         = "backend/dataflow-etl-pipeline/cloudbuild.yaml"
+  cloud_build_trigger_repository_owner = "jcuendes86"
+  cloud_build_trigger_repository_name  = "csmd-tfm"
+
+  cloud_build_service_account_email = module.sa-cloud-build.service_account_email
+
+  cloud_build_trigger_substitutions = {
+    _BUCKET_NAME        = module.bucket_dataflow_templates.storage-name
+    _ARTIFACT_REPO_NAME = module.artifact-registry.artifact-registry-name
+  }
+
+  depends_on = [
+    module.apis,
+    module.bucket_dataflow_templates,
+    module.artifact-registry,
+    module.sa-cloud-build
+  ]
+}

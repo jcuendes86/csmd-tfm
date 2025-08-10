@@ -1,0 +1,76 @@
+steps:
+  # 1) Build de la imagen Docker
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - "-t"
+      - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REPO_NAME}/${_IMAGE_NAME}:${_IMAGE_TAG}"
+      - "-f"
+      - "dataflow-etl-pipeline/Dockerfile"
+      - "dataflow-etl-pipeline"
+
+  # 2) Push de la imagen a Artifact Registry
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REPO_NAME}/${_IMAGE_NAME}:${_IMAGE_TAG}"
+
+  # 3) (Opcional pero recomendable) Crear metadata.json para la plantilla Flex
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        cat > metadata.json <<'EOF'
+        {
+          "name": "Cars Dataset Pipeline (Flex)",
+          "description": "Pipeline Apache Beam para procesar CSV de coches y escribir en BigQuery.",
+          "parameters": [
+            {
+              "name": "input",
+              "label": "Fichero CSV de entrada (GCS)",
+              "helpText": "Ruta al CSV en Cloud Storage. Ejemplo: gs://mi-bucket/input/cars.csv o gs://mi-bucket/input/*.csv",
+              "paramType": "TEXT",
+              "isOptional": false,
+              "regexes": [
+                 "^gs://.+"
+              ]
+            },
+            {
+              "name": "output_table",
+              "label": "Tabla de salida en BigQuery",
+              "helpText": "Tabla de destino en BigQuery con formato PROJECT:DATASET.TABLE",
+              "paramType": "TEXT",
+              "isOptional": false,
+              "regexes": [
+                "^[a-zA-Z0-9_-]+:[a-zA-Z0-9_]+\\.[a-zA-Z0-9_]+$"
+              ]
+            },
+          ]
+        }
+        EOF
+
+  # 4) Construcción de la Flex Template y subida del spec JSON a GCS
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    args:
+      - gcloud
+      - dataflow
+      - flex-template
+      - build
+      - "${_TEMPLATE_BUCKET_NAME}"
+      - "--project=${PROJECT_ID}"
+      - "--sdk-language=PYTHON"
+      - "--image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REPO_NAME}/${_IMAGE_NAME}:${_IMAGE_TAG}"
+      - "--metadata-file=metadata.json"
+
+substitutions:
+  # Región de Artifact Registry (p.ej. europe-southwest1, europe-west1, etc.)
+  _REGION: 'europe-west1'
+  # Nombre de la imagen (sin repo ni tag)
+  _IMAGE_NAME: "cars-dataset-pipeline"
+  # Tag de la imagen
+  _IMAGE_TAG: "latest"
+  # Ubicación GCS de la plantilla Flex a crear (DEBE empezar por gs://)
+  _TEMPLATE_BUCKET_NAME: 'gs://MI_BUCKET/templates/cars_dataset_pipeline.json'
+  # Nombre del repositorio de Artifact Registry (no la URL)
+  _ARTIFACT_REPO_NAME: 'default-repo-name'
