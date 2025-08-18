@@ -67,6 +67,9 @@ steps:
       - "--temp-location=${_TEMP_BUCKET_NAME}"
       - "--service-account-email=${_SERVICE_ACCOUNT_EMAIL}"
 
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 substitutions:
   # Región de Artifact Registry (p.ej. europe-southwest1, europe-west1, etc.)
   _REGION: 'europe-west1'
