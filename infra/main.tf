@@ -116,7 +116,8 @@ module "sa-cloud-build" {
   sa_roles = [
     "roles/cloudbuild.builds.editor",
     "roles/logging.logWriter",
-    "roles/artifactregistry.writer"
+    "roles/artifactregistry.writer",
+    "roles/storage.objectAdmin"
   ]
 
   depends_on = [
