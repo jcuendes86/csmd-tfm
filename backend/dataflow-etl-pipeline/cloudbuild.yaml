@@ -1,6 +1,7 @@
 steps:
   # 1) Build de la imagen Docker
   - name: gcr.io/cloud-builders/docker
+    id: Build Docker Image
     args:
       - build
       - "-t"
@@ -11,12 +12,14 @@ steps:
 
   # 2) Push de la imagen a Artifact Registry
   - name: gcr.io/cloud-builders/docker
+    id: Push Docker Image
     args:
       - push
       - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REPO_NAME}/${_IMAGE_NAME}:${_IMAGE_TAG}"
 
   # 3) (Opcional pero recomendable) Crear metadata.json para la plantilla Flex
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    id: Create Metadata JSON
     entrypoint: bash
     args:
       - -c
@@ -52,6 +55,7 @@ steps:
 
   # 4) Construcción de la Flex Template y subida del spec JSON a GCS
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    id: Build Flex Template
     args:
       - gcloud
       - dataflow

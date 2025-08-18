@@ -152,7 +152,7 @@ module "cloud-build" {
   cloud_build_service_account_email = module.sa-cloud-build.service_account_name
 
   cloud_build_trigger_substitutions = {
-    _BUCKET_NAME        = "gs://${module.bucket_dataflow_templates.storage-name}/templates/cars_dataset_pipeline.json"
+    _TEMPLATE_BUCKET_NAME = "gs://${module.bucket_dataflow_templates.storage-name}/templates/cars_dataset_pipeline.json"
     _ARTIFACT_REPO_NAME = module.artifact-registry.artifact-registry-name
     _IMAGE_NAME         = "cars-dataset-pipeline"
     _IMAGE_TAG          = "latest"
