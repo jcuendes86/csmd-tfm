@@ -62,6 +62,10 @@ steps:
       - "--sdk-language=PYTHON"
       - "--image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REPO_NAME}/${_IMAGE_NAME}:${_IMAGE_TAG}"
       - "--metadata-file=metadata.json"
+      - "--network=${_NETWORK_NAME}"
+      - "--staging-location=${_STAGING_BUCKET_NAME}"
+      - "--temp-location=${_TEMP_BUCKET_NAME}"
+      - "--service-account-email=${_SERVICE_ACCOUNT_EMAIL}"
 
 substitutions:
   # Región de Artifact Registry (p.ej. europe-southwest1, europe-west1, etc.)
@@ -74,3 +78,11 @@ substitutions:
   _TEMPLATE_BUCKET_NAME: 'gs://MI_BUCKET/templates/cars_dataset_pipeline.json'
   # Nombre del repositorio de Artifact Registry (no la URL)
   _ARTIFACT_REPO_NAME: 'default-repo-name'
+  # Nombre de la red VPC donde se ejecutará el Dataflow
+  _NETWORK_NAME: 'default'
+  # Nombre del bucket de staging (DEBE empezar por gs://)
+  _STAGING_BUCKET_NAME: 'gs://MI_BUCKET/staging'
+  # Nombre del bucket de temp (DEBE empezar por gs://)
+  _TEMP_BUCKET_NAME: 'gs://MI_BUCKET/temp'
+  # Email de la cuenta de servicio que ejecutará la construcción de la plantilla Flex
+  _SERVICE_ACCOUNT_EMAIL: 'dataflow-sa@${PROJECT_ID}.iam.gserviceaccount.com'
