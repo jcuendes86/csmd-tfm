@@ -6,8 +6,8 @@ steps:
       - "-t"
       - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REPO_NAME}/${_IMAGE_NAME}:${_IMAGE_TAG}"
       - "-f"
-      - "dataflow-etl-pipeline/Dockerfile"
-      - "dataflow-etl-pipeline"
+      - "backend/dataflow-etl-pipeline/Dockerfile"
+      - "backend/dataflow-etl-pipeline"
 
   # 2) Push de la imagen a Artifact Registry
   - name: gcr.io/cloud-builders/docker
