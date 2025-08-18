@@ -152,15 +152,15 @@ module "cloud-build" {
   cloud_build_service_account_email = module.sa-cloud-build.service_account_name
 
   cloud_build_trigger_substitutions = {
-    _TEMPLATE_BUCKET_NAME = "gs://${module.bucket_dataflow_templates.storage-name}/templates/cars_dataset_pipeline.json"
-    _ARTIFACT_REPO_NAME = module.artifact-registry.artifact-registry-name
-    _IMAGE_NAME         = "cars-dataset-pipeline"
-    _IMAGE_TAG          = "latest"
-    _REGION             = var.region
-    _NETWORK_NAME       = module.network.network_name
-    _STAGING_BUCKET_NAME = "gs://${module.bucket_dataflow_jobs.storage-name}/staging"
-    _TEMP_BUCKET_NAME   = "gs://${module.bucket_dataflow_jobs.storage-name}/temp"
-    _SERVICE_ACCOUNT_EMAIL = module.sa-dataflow-worker.service_account_email
+    _TEMPLATE_BUCKET_NAME   = "gs://${module.bucket_dataflow_templates.storage-name}/templates/cars_dataset_pipeline.json"
+    _ARTIFACT_REPO_NAME     = module.artifact-registry.artifact-registry-name
+    _IMAGE_NAME             = "cars-dataset-pipeline"
+    _IMAGE_TAG              = "latest"
+    _REGION                 = var.region
+    _NETWORK_NAME           = module.network.network_name
+    _STAGING_BUCKET_NAME    = "gs://${module.bucket_dataflow_jobs.storage-name}/staging"
+    _TEMP_BUCKET_NAME       = "gs://${module.bucket_dataflow_jobs.storage-name}/temp"
+    _SERVICE_ACCOUNT_EMAIL  = module.sa-dataflow-worker.service_account_email
   }
 
   depends_on = [
