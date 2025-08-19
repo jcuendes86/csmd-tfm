@@ -11,8 +11,7 @@ steps:
       - "--project=${PROJECT_ID}"
       - "--region=${_REGION}"
       - "--template-file-gcs-location=${_TEMPLATE_BUCKET_NAME}"
-      - "--parameters=input=${_DATASET_BUCKET_NAME},\
-              output_table=${PROJECT_ID}:${_BQ_DATASET}.${_BQ_TABLE}"
+      - "--parameters=input=${_DATASET_BUCKET_NAME},output_table=${PROJECT_ID}:${_BQ_DATASET}.${_BQ_TABLE}"
       - "--service-account-email=${_DATAFLOW_WORKER_SA_EMAIL}"
 
 options:
