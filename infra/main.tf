@@ -174,3 +174,37 @@ module "cloud-build" {
     module.sa-dataflow-worker,
   ]
 }
+
+# Crear el trigger de Cloud Build para ejecutar el job de Dataflow
+module "cloud-build-dataflow-run-job" {
+  source = "./modules/cloud-build"
+
+  project_id                           = var.project_id
+  region                               = var.region
+
+  cloud_build_trigger_name             = "cb-dataflow-flex-template-runner"
+  cloud_build_trigger_filename         = "backend/dataflow-etl-pipeline/dataflow_job.yaml"
+  cloud_build_trigger_repository_owner = "jcuendes86"
+  cloud_build_trigger_repository_name  = "csmd-tfm"
+
+  cloud_build_service_account_email = module.sa-cloud-build.service_account_name
+
+  cloud_build_automatic_trigger = false
+
+  cloud_build_trigger_substitutions = {
+    _REGION                 = var.region
+    _TEMPLATE_BUCKET_NAME   = "gs://${module.bucket_dataflow_templates.storage-name}/templates/cars_dataset_pipeline.json"
+    _DATASET_BUCKET_NAME    = "gs://${module.bucket_cars_dataset.storage-name}/coches-segunda-mano.csv"
+    _BQ_DATASET             = module.bigquey.dataset
+    _BQ_TABLE               = module.bigquey.table
+  }
+
+  depends_on = [
+    module.apis,
+    module.network,
+    module.bucket_cars_dataset,
+    module.bucket_dataflow_templates,
+    module.bigquey,
+    module.sa-cloud-build
+  ]
+}
