@@ -1,0 +1,30 @@
+steps:
+  # 1) Ejecucion del trabajo en Dataflow Flex Template
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    id: Run Dataflow Flex Template Job
+    args:
+      - gcloud
+      - dataflow
+      - flex-template
+      - run
+      - "cars-dataset-pipeline-job-$(date +%Y%m%d%H%M%S)"
+      - "--project=${PROJECT_ID}"
+      - "--region=${_REGION}"
+      - "--template-file-gcs-location=${_TEMPLATE_BUCKET_NAME}"
+      - "--parameters=input=${_DATASET_BUCKET_NAME},\
+              output_table=${PROJECT_ID∫}:${_BQ_DATASET}.${_BQ_TABLE}"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  # Región de Artifact Registry (p.ej. europe-southwest1, europe-west1, etc.)
+  _REGION: 'europe-west1'
+  # Ubicación GCS de la plantilla Flex (DEBE empezar por gs://)
+  _TEMPLATE_BUCKET_NAME: 'gs://MI_BUCKET/templates/cars_dataset_pipeline.json'
+  # Ubicacion del dataset (DEBE empezar por gs://)
+  _DATASET_BUCKET_NAME: 'gs://MI_BUCKET/coches-segunda-mano-test.csv'
+  # Nombre del dataset en BigQuery
+  _BQ_DATASET: 'defaultDataset'
+  # Nombre de la tabla en BigQuery
+  _BQ_TABLE: 'defaultTable'
