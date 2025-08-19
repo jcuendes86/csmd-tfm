@@ -5,5 +5,5 @@ output "dataset" {
 
 output "table" {
   description = "Table name"
-  value = google_bigquery_table.table.id
+  value = google_bigquery_table.table.table_id
 }

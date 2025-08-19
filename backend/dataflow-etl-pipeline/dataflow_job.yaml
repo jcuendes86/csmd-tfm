@@ -7,12 +7,12 @@ steps:
       - dataflow
       - flex-template
       - run
-      - "cars-dataset-pipeline-job-$(date +%Y%m%d%H%M%S)"
+      - "cars-dataset-pipeline-job-${SHORT_SHA}"
       - "--project=${PROJECT_ID}"
       - "--region=${_REGION}"
       - "--template-file-gcs-location=${_TEMPLATE_BUCKET_NAME}"
       - "--parameters=input=${_DATASET_BUCKET_NAME},\
-              output_table=${PROJECT_ID∫}:${_BQ_DATASET}.${_BQ_TABLE}"
+              output_table=${PROJECT_ID}:${_BQ_DATASET}.${_BQ_TABLE}"
 
 options:
   logging: CLOUD_LOGGING_ONLY

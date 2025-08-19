@@ -16,6 +16,7 @@ variable "apis" {
     "artifactregistry",
     "cloudbuild",
     "compute",
+    "dataflow",
     "iam"
   ]
 }
