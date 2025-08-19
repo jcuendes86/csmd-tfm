@@ -159,6 +159,7 @@ module "cloud-build" {
     _IMAGE_TAG              = "latest"
     _REGION                 = var.region
     _NETWORK_NAME           = module.network.network_name
+    _SUBNETWORK_NAME        = module.network.subnetwork_name
     _STAGING_BUCKET_NAME    = "gs://${module.bucket_dataflow_jobs.storage-name}/staging"
     _TEMP_BUCKET_NAME       = "gs://${module.bucket_dataflow_jobs.storage-name}/temp"
     _SERVICE_ACCOUNT_EMAIL  = module.sa-dataflow-worker.service_account_email

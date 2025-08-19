@@ -67,6 +67,7 @@ steps:
       - "--image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REPO_NAME}/${_IMAGE_NAME}:${_IMAGE_TAG}"
       - "--metadata-file=metadata.json"
       - "--network=${_NETWORK_NAME}"
+      - "--subnetwork=${_SUBNETWORK_NAME}"
       - "--staging-location=${_STAGING_BUCKET_NAME}"
       - "--temp-location=${_TEMP_BUCKET_NAME}"
       - "--service-account-email=${_SERVICE_ACCOUNT_EMAIL}"
@@ -87,6 +88,8 @@ substitutions:
   _ARTIFACT_REPO_NAME: 'default-repo-name'
   # Nombre de la red VPC donde se ejecutará el Dataflow
   _NETWORK_NAME: 'default'
+  # Nombre de la subred VPC donde se ejecutará el Dataflow
+  _SUBNETWORK_NAME: 'default'
   # Nombre del bucket de staging (DEBE empezar por gs://)
   _STAGING_BUCKET_NAME: 'gs://MI_BUCKET/staging'
   # Nombre del bucket de temp (DEBE empezar por gs://)

@@ -13,3 +13,7 @@ output "subnetwork" {
   value       = google_compute_subnetwork.custom-subnetwork
 }
 
+output "subnetwork_name" {
+  description = "VPC Network name"
+  value       = google_compute_subnetwork.custom-subnetwork.name
+}
