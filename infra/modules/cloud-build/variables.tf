@@ -60,9 +60,3 @@ variable "cloud_build_trigger_substitutions" {
   default     = {}
 }
 
-variable "cloud_build_automatic_trigger" {
-  description = "Indicates whether the Cloud Build trigger should run automatically."
-  type        = bool
-  default     = true
-}
-

@@ -189,7 +189,7 @@ module "cloud-build-dataflow-run-job" {
 
   cloud_build_service_account_email = module.sa-cloud-build.service_account_name
 
-  cloud_build_automatic_trigger = false
+  cloud_build_trigger_regex_branch = "never-trigger"
 
   cloud_build_trigger_substitutions = {
     _REGION                 = var.region

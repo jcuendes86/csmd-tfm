@@ -12,13 +12,8 @@ resource "google_cloudbuild_trigger" "cb_dataflow" {
   github {
     owner = var.cloud_build_trigger_repository_owner
     name  = var.cloud_build_trigger_repository_name
-
-    dynamic "push" {
-      for_each = var.cloud_build_automatic_trigger == true ? [1] : []
-      content {
-        branch = var.cloud_build_trigger_regex_branch
-      }
-      
+    push {
+      branch = var.cloud_build_trigger_regex_branch
     }
   }
 }
