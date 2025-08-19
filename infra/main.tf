@@ -197,6 +197,7 @@ module "cloud-build-dataflow-run-job" {
     _DATASET_BUCKET_NAME    = "gs://${module.bucket_cars_dataset.storage-name}/coches-segunda-mano.csv"
     _BQ_DATASET             = module.bigquey.dataset
     _BQ_TABLE               = module.bigquey.table
+    _DATAFLOW_WORKER_SA_EMAIL = module.sa-dataflow-worker.service_account_email
   }
 
   depends_on = [
@@ -205,6 +206,7 @@ module "cloud-build-dataflow-run-job" {
     module.bucket_cars_dataset,
     module.bucket_dataflow_templates,
     module.bigquey,
+    module.sa-dataflow-worker,
     module.sa-cloud-build
   ]
 }

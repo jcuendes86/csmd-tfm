@@ -13,6 +13,7 @@ steps:
       - "--template-file-gcs-location=${_TEMPLATE_BUCKET_NAME}"
       - "--parameters=input=${_DATASET_BUCKET_NAME},\
               output_table=${PROJECT_ID}:${_BQ_DATASET}.${_BQ_TABLE}"
+      - "--service-account-email=${_DATAFLOW_WORKER_SA_EMAIL}"
 
 options:
   logging: CLOUD_LOGGING_ONLY
@@ -28,3 +29,5 @@ substitutions:
   _BQ_DATASET: 'defaultDataset'
   # Nombre de la tabla en BigQuery
   _BQ_TABLE: 'defaultTable'
+  # Email del Service Account de Dataflow Worker
+  _DATAFLOW_WORKER_SA_EMAIL: 'dataflow-worker-sa@my-project.iam.gserviceaccount.com'
