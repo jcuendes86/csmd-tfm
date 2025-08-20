@@ -12,6 +12,8 @@ steps:
       - "--region=${_REGION}"
       - "--template-file-gcs-location=${_TEMPLATE_BUCKET_NAME}"
       - "--parameters=input=${_DATASET_BUCKET_NAME},output_table=${PROJECT_ID}:${_BQ_DATASET}.${_BQ_TABLE}"
+      - "--staging-location=${_STAGING_BUCKET_NAME}"
+      - "--temp-location=${_TEMP_BUCKET_NAME}"
       - "--service-account-email=${_DATAFLOW_WORKER_SA_EMAIL}"
 
 options:
@@ -24,6 +26,10 @@ substitutions:
   _TEMPLATE_BUCKET_NAME: 'gs://MI_BUCKET/templates/cars_dataset_pipeline.json'
   # Ubicacion del dataset (DEBE empezar por gs://)
   _DATASET_BUCKET_NAME: 'gs://MI_BUCKET/coches-segunda-mano-test.csv'
+  # Nombre del bucket de staging (DEBE empezar por gs://)
+  _STAGING_BUCKET_NAME: 'gs://MI_BUCKET/staging'
+  # Nombre del bucket de temp (DEBE empezar por gs://)
+  _TEMP_BUCKET_NAME: 'gs://MI_BUCKET/temp'
   # Nombre del dataset en BigQuery
   _BQ_DATASET: 'defaultDataset'
   # Nombre de la tabla en BigQuery
