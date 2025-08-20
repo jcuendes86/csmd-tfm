@@ -97,7 +97,8 @@ module "sa-dataflow-worker" {
     "roles/dataflow.worker",
     "roles/storage.objectAdmin",
     "roles/bigquery.dataEditor",
-    "roles/bigquery.jobUser"
+    "roles/bigquery.jobUser",
+    "roles/artifactregistry.writer"
   ]
 
   depends_on = [
@@ -117,7 +118,11 @@ module "sa-cloud-build" {
     "roles/cloudbuild.builds.editor",
     "roles/logging.logWriter",
     "roles/artifactregistry.writer",
-    "roles/storage.objectAdmin"
+    "roles/storage.objectAdmin",
+    "roles/dataflow.admin",
+    "roles/bigquery.dataEditor",
+    "roles/bigquery.jobUser",
+    "roles/iam.serviceAccountUser"
   ]
 
   depends_on = [
