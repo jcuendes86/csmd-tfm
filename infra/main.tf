@@ -12,7 +12,6 @@ module "network" {
   project_id = var.project_id
   region     = var.region
   vpc_name   = "${var.project_id}-custom-network"
-  subnetwork_name = "${var.project_id}-subnetwork"
   vpc_delete_default_routes_on_create = true
 
   depends_on = [
@@ -164,7 +163,7 @@ module "cloud-build" {
     _IMAGE_TAG              = "latest"
     _REGION                 = var.region
     _NETWORK_NAME           = module.network.network_name
-    _SUBNETWORK_NAME        = module.network.subnetwork_self_link
+    _SUBNETWORK_NAME        = "https://www.googleapis.com/compute/v1/projects/${var.project_id}/regions/europe-southwest1/subnetworks/${module.network.network_name}"
     _STAGING_BUCKET_NAME    = "gs://${module.bucket_dataflow_jobs.storage-name}/staging"
     _TEMP_BUCKET_NAME       = "gs://${module.bucket_dataflow_jobs.storage-name}/temp"
     _SERVICE_ACCOUNT_EMAIL  = module.sa-dataflow-worker.service_account_email
@@ -198,7 +197,7 @@ module "cloud-build-dataflow-run-job" {
   cloud_build_trigger_regex_branch = "never-trigger"
 
   cloud_build_trigger_substitutions = {
-    _REGION                 = var.region
+    _REGION                 = "europe-southwest1"
     _TEMPLATE_BUCKET_NAME   = "gs://${module.bucket_dataflow_templates.storage-name}/templates/cars_dataset_pipeline.json"
     _DATASET_BUCKET_NAME    = "gs://${module.bucket_cars_dataset.storage-name}/coches-segunda-mano.csv"
     _STAGING_BUCKET_NAME    = "gs://${module.bucket_dataflow_jobs.storage-name}/staging"

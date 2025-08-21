@@ -17,11 +17,6 @@ variable "vpc_name" {
   type        = string
 }
 
-variable "subnetwork_name" {
-  description = "Name of the subnetwork."
-  type        = string
-}
-
 ###################
 #### OPTIONAL #####
 ###################
@@ -35,7 +30,7 @@ variable "vpc_description" {
 variable "vpc_auto_create_subnetworks" {
   description = "When set to true, the network is created in auto subnet mode and it will create a subnet for each region automatically across the 10.128.0.0/9 address range. When set to false, the network is created in custom subnet mode so the user can explicitly connect subnetwork resources. Default false"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "vpc_routing_mode" {
@@ -50,14 +45,8 @@ variable "vpc_delete_default_routes_on_create" {
   default     = false
 }
 
-variable "network_ip_cidr_range_main" {
-  description = "IP range for main subnet. Default value is 10.0.1.0/24"
+variable "vpc_network_firewall_policy_enforcement_order" {
+  description = "The order in which firewall policies are enforced."
   type        = string
-  default     = "10.0.1.0/24"
-}
-
-variable "subnetwork_description" {
-  description = "An optional description of this resource. The resource must be recreated to modify this field."
-  type        = string
-  default     = "Main custom subnetwork"
+  default     = "AFTER_CLASSIC_FIREWALL"
 }
