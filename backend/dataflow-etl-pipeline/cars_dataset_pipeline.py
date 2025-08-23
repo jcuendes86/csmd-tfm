@@ -101,6 +101,24 @@ class ParseAndCleanDoFn(beam.DoFn):
             logging.error(f"No se pudo procesar la fila: '{element}'. Error: {e}")
             # Al no hacer 'yield', esta fila se descarta.
 
+# Índices de las columnas que forman la clave única (make, model, version, price, fuel, year, kms, power, doors, shift, color, province, country)
+KEY_INDICES = [2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 17, 18]
+
+def create_business_key(element):
+    """
+    Parsea una línea CSV y crea una clave única basada en las columnas importantes.
+    """
+    try:
+        parts = element.split(';')
+        # Creamos una tupla con los valores de las columnas clave
+        key = tuple(parts[i] for i in KEY_INDICES)
+        return (key, element) # Devolvemos (clave, línea_original)
+    except IndexError:
+        # Si la línea está mal formada, le damos una clave nula para que se agrupe
+        # y potencialmente se descarte o se revise.
+        return (None, element)
+
+
 def run(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', dest='input', required=True, help='Fichero CSV de entrada en GCS.')
@@ -113,9 +131,13 @@ def run(argv=None):
         (
             p
             | '1. Leer el fichero CSV' >> beam.io.ReadFromText(known_args.input, skip_header_lines=1)
-            | '2. Eliminar Líneas Duplicadas' >> beam.Distinct()
-            | '3. Limpiar y Transformar Filas' >> beam.ParDo(ParseAndCleanDoFn())
-            | '4. Escribir en BigQuery' >> beam.io.WriteToBigQuery(
+            | '2. Limpiar Espacios' >> beam.Map(lambda line: line.strip())
+            | '3. Crear Clave de Negocio' >> beam.Map(create_business_key)
+            | '4. Filtrar Claves Malas' >> beam.Filter(lambda x: x[0] is not None)
+            | '5. Agrupar por Clave' >> beam.GroupByKey()
+            | '6. Extraer Registro Único' >> beam.Map(lambda x: x[1][0])
+            | '7. Limpiar y Transformar Filas' >> beam.ParDo(ParseAndCleanDoFn())
+            | '8. Escribir en BigQuery' >> beam.io.WriteToBigQuery(
                 table=known_args.output_table,
                 schema=TABLE_SCHEMA,
                 write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE,
