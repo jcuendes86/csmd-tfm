@@ -14,6 +14,9 @@ steps:
       - "--parameters=input=${_DATASET_BUCKET_NAME},output_table=${PROJECT_ID}:${_BQ_DATASET}.${_BQ_TABLE}"
       - "--staging-location=${_STAGING_BUCKET_NAME}"
       - "--temp-location=${_TEMP_BUCKET_NAME}"
+      - "--max-workers=1"
+      - "--num-workers=1"
+      - "--worker-machine-type=n2-standard-2"
       - "--service-account-email=${_DATAFLOW_WORKER_SA_EMAIL}"
 
 options:
