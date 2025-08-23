@@ -35,6 +35,9 @@ CSV_COLUMNS = [
 
 class ParseAndCleanDoFn(beam.DoFn):
     def process(self, element):
+        # Definimos los campos que no pueden ser nulos para la validación
+        REQUIRED_FIELDS = {'make', 'model', 'year', 'kms', 'province', 'country'}
+
         try:
             # El delimitador es ';'. StringIO lo trata como un fichero.
             reader = csv.reader(StringIO(element), delimiter=';')
@@ -79,7 +82,19 @@ class ParseAndCleanDoFn(beam.DoFn):
                     output_dict[col_name] = None
 
             # Producimos el diccionario limpio como salida de esta etapa.
-            yield output_dict
+
+            # --- Bloque de Validación ---
+            # Comprobamos si algún campo requerido es nulo antes de emitir la fila
+            is_valid = True
+            for required_field in REQUIRED_FIELDS:
+                if output_dict.get(required_field) is None:
+                    logging.warning(f"Descartando fila por valor nulo en campo requerido '{required_field}'. Fila original: {row_dict}")
+                    is_valid = False
+                    break
+            
+            # Solo producimos la fila si pasa la validación
+            if is_valid:
+                yield output_dict
 
         except Exception as e:
             # Capturamos cualquier otro error inesperado en el parseo de la fila.
@@ -98,8 +113,9 @@ def run(argv=None):
         (
             p
             | '1. Leer el fichero CSV' >> beam.io.ReadFromText(known_args.input, skip_header_lines=1)
-            | '2. Limpiar y Transformar Filas' >> beam.ParDo(ParseAndCleanDoFn())
-            | '3. Escribir en BigQuery' >> beam.io.WriteToBigQuery(
+            | '2. Eliminar Líneas Duplicadas' >> beam.Distinct()
+            | '3. Limpiar y Transformar Filas' >> beam.ParDo(ParseAndCleanDoFn())
+            | '4. Escribir en BigQuery' >> beam.io.WriteToBigQuery(
                 table=known_args.output_table,
                 schema=TABLE_SCHEMA,
                 write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE,
