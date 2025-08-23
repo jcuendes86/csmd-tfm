@@ -102,7 +102,7 @@ def run(argv=None):
             | '3. Escribir en BigQuery' >> beam.io.WriteToBigQuery(
                 table=known_args.output_table,
                 schema=TABLE_SCHEMA,
-                write_disposition=beam.io.BigQueryDisposition.WRITE_APPEND,
+                write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE,
                 create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED
             )
         )

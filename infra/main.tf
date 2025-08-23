@@ -12,7 +12,6 @@ module "network" {
   project_id = var.project_id
   region     = var.region
   vpc_name   = "${var.project_id}-custom-network"
-  vpc_delete_default_routes_on_create = true
 
   depends_on = [
     module.apis
