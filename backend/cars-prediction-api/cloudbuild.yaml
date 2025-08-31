@@ -18,8 +18,8 @@ steps:
         pwd
         echo "Listing files:"
         ls -la
-        echo "Listing files - Previous dir:"
-        ls -la ../
+        echo "Listing files - workspace dir:"
+        ls -la ../workspace
         npm run build
     entrypoint: bash
   # 3) Build de la imagen Docker
