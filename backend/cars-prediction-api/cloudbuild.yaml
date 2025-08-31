@@ -1,28 +1,32 @@
 steps:
   - name: gcr.io/cloud-builders/npm
     id: Installing dependencies
+    dir: cars-prediction-api
     args:
       - run
       - build
   # 2) Build de la imagen Docker
   - name: gcr.io/cloud-builders/docker
     id: Build Docker Image
+    dir: cars-prediction-api
     args:
       - build
       - "-t"
       - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REPO_NAME}/${_IMAGE_NAME}:${_IMAGE_TAG}"
       - "-f"
-      - "backend/cars-prediction-api/Dockerfile"
-      - "backend/cars-prediction-api"
+      - "./Dockerfile"
+      - "."
   # 3) Push de la imagen a Artifact Registry
   - name: gcr.io/cloud-builders/docker
     id: Push Docker Image
+    dir: cars-prediction-api
     args:
       - push
       - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REPO_NAME}/${_IMAGE_NAME}:${_IMAGE_TAG}"
   # 4) Despliegue en Cloud Run
   - name: gcr.io/cloud-builders/gcloud
     id: Deploy
+    dir: cars-prediction-api
     args:
       - run
       - deploy
@@ -32,6 +36,7 @@ steps:
   # 5) Actualizar trafico a la nueva revision
   - name: gcr.io/cloud-builders/gcloud
     id: Update Traffic
+    dir: cars-prediction-api
     args:
       - run
       - services
