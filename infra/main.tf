@@ -120,7 +120,8 @@ module "sa-cloud-build" {
     "roles/dataflow.admin",
     "roles/bigquery.dataEditor",
     "roles/bigquery.jobUser",
-    "roles/iam.serviceAccountUser"
+    "roles/iam.serviceAccountUser",
+    "roles/run.admin"
   ]
 
   depends_on = [
