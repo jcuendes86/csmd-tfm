@@ -11,3 +11,7 @@ infra/cloud-tfm.json
 
 .terraform*
 terraform*
+
+node_modules
+dist
+package-lock.json

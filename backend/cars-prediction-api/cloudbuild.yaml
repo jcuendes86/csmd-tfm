@@ -1,0 +1,56 @@
+steps:
+  - name: gcr.io/cloud-builders/npm
+    id: Installing dependencies
+    args:
+      - run
+      - build
+  # 2) Build de la imagen Docker
+  - name: gcr.io/cloud-builders/docker
+    id: Build Docker Image
+    args:
+      - build
+      - "-t"
+      - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REPO_NAME}/${_IMAGE_NAME}:${_IMAGE_TAG}"
+      - "-f"
+      - "backend/cars-prediction-api/Dockerfile"
+      - "backend/cars-prediction-api"
+  # 3) Push de la imagen a Artifact Registry
+  - name: gcr.io/cloud-builders/docker
+    id: Push Docker Image
+    args:
+      - push
+      - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REPO_NAME}/${_IMAGE_NAME}:${_IMAGE_TAG}"
+  # 4) Despliegue en Cloud Run
+  - name: gcr.io/cloud-builders/gcloud
+    id: Deploy
+    args:
+      - run
+      - deploy
+      - "${_SERVICE_NAME}"
+      - "--region=${_REGION}"
+      - "--image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REPO_NAME}/${_IMAGE_NAME}:${_IMAGE_TAG}"
+  # 5) Actualizar trafico a la nueva revision
+  - name: gcr.io/cloud-builders/gcloud
+    id: Update Traffic
+    args:
+      - run
+      - services
+      - update-traffic
+      - "${_SERVICE_NAME}"
+      - "--region=${_REGION}"
+      - "--to-revisions=LATEST=100"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  # Región de Artifact Registry (p.ej. europe-southwest1, europe-west1, etc.)
+  _REGION: 'europe-west1'
+  # Nombre del servicio en Cloud Run
+  _SERVICE_NAME: 'cars-prediction-api'
+  # Nombre de la imagen (sin repo ni tag)
+  _IMAGE_NAME: "cars-prediction-api"
+  # Tag de la imagen
+  _IMAGE_TAG: "latest"
+  # Nombre del repositorio de Artifact Registry (no la URL)
+  _ARTIFACT_REPO_NAME: 'default-repo-name'

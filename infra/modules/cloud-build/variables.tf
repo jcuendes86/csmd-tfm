@@ -60,3 +60,9 @@ variable "cloud_build_trigger_substitutions" {
   default     = {}
 }
 
+variable "included_files" {
+  description = "value"
+  type = list(string)
+  default = []
+}
+
