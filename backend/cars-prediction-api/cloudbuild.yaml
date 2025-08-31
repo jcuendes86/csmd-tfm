@@ -2,10 +2,20 @@ steps:
   # 1) Copiar ficheros
   - name: 'alpine'
     id: Copiar ficheros
-    entrypoint: 'mv'
+    entrypoint: 'bash'
     args:
-      - '/workspace/backend/cars-prediction-api'
-      - '/cars-prediction-api'
+      - '-c'
+      - |
+        echo "Copying files..."
+        mv /workspace/backend/cars-prediction-api /cars-prediction-api
+        echo "Listing files 1:"
+        ls -la /cars-prediction-api
+        echo "Listing files 2:"
+        ls -la /workspace
+        echo "Listing files 3:"
+        ls -la /workspace/backend
+        echo "Listing files 4:"
+        ls -la /workspace/backend/cars-prediction-api
     volumes:
       - name: 'cars-prediction-api'
         path: '/cars-prediction-api'
