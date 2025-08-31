@@ -1,6 +1,6 @@
 steps:
   # 1) Copiar ficheros
-  - name: 'alpine'
+  - name: 'gcr.io/cloud-builders/npm'
     id: Copiar ficheros
     entrypoint: 'bash'
     args:
