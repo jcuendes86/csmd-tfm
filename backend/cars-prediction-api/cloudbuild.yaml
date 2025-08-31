@@ -1,10 +1,18 @@
 steps:
+  # 1) Instalar dependencias
   - name: gcr.io/cloud-builders/npm
     id: Installing dependencies
     dir: cars-prediction-api
     args:
-      - run
-      - build
+      - '-c'
+      - |
+        echo "Installing dependencies..."
+        echo "Current dir:"
+        pwd
+        echo "Listing files:"
+        ls -la
+        npm run build
+    entrypoint: bash
   # 2) Build de la imagen Docker
   - name: gcr.io/cloud-builders/docker
     id: Build Docker Image
