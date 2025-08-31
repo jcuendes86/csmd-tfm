@@ -1,5 +1,12 @@
 steps:
-  # 1) Instalar dependencias
+  # 1) Copiar ficheros
+  - name: 'alpine'
+    id: Copiar ficheros
+    entrypoint: 'mv'
+    args:
+      - '/workspace/backend/cars-prediction-api'
+      - '/cars-prediction-api'
+  # 2) Instalar dependencias
   - name: gcr.io/cloud-builders/npm
     id: Installing dependencies
     dir: /cars-prediction-api
@@ -15,7 +22,7 @@ steps:
         ls -la ../
         npm run build
     entrypoint: bash
-  # 2) Build de la imagen Docker
+  # 3) Build de la imagen Docker
   - name: gcr.io/cloud-builders/docker
     id: Build Docker Image
     dir: /cars-prediction-api
@@ -26,14 +33,14 @@ steps:
       - "-f"
       - "./Dockerfile"
       - "."
-  # 3) Push de la imagen a Artifact Registry
+  # 4) Push de la imagen a Artifact Registry
   - name: gcr.io/cloud-builders/docker
     id: Push Docker Image
     dir: /cars-prediction-api
     args:
       - push
       - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REPO_NAME}/${_IMAGE_NAME}:${_IMAGE_TAG}"
-  # 4) Despliegue en Cloud Run
+  # 5) Despliegue en Cloud Run
   - name: gcr.io/cloud-builders/gcloud
     id: Deploy
     dir: /cars-prediction-api
@@ -43,7 +50,7 @@ steps:
       - "${_SERVICE_NAME}"
       - "--region=${_REGION}"
       - "--image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REPO_NAME}/${_IMAGE_NAME}:${_IMAGE_TAG}"
-  # 5) Actualizar trafico a la nueva revision
+  # 6) Actualizar trafico a la nueva revision
   - name: gcr.io/cloud-builders/gcloud
     id: Update Traffic
     dir: /cars-prediction-api
