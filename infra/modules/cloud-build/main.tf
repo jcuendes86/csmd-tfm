@@ -9,6 +9,8 @@ resource "google_cloudbuild_trigger" "cb_dataflow" {
   filename       = var.cloud_build_trigger_filename
   substitutions  = var.cloud_build_trigger_substitutions
 
+  included_files = var.included_files
+
   github {
     owner = var.cloud_build_trigger_repository_owner
     name  = var.cloud_build_trigger_repository_name

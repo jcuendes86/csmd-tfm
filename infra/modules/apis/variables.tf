@@ -17,6 +17,8 @@ variable "apis" {
     "cloudbuild",
     "compute",
     "dataflow",
-    "iam"
+    "iam",
+    "run",
+    "secretmanager",
   ]
 }

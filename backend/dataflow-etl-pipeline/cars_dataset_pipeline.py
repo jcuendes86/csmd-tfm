@@ -101,7 +101,9 @@ class ParseAndCleanDoFn(beam.DoFn):
             logging.error(f"No se pudo procesar la fila: '{element}'. Error: {e}")
             # Al no hacer 'yield', esta fila se descarta.
 
-# Índices de las columnas que forman la clave única (make, model, version, price, fuel, year, kms, power, doors, shift, color, province, country)
+# Índices de las columnas que forman la clave única
+# Basado en tu CSV_COLUMNS: make=2, model=3, version=4, price=5, fuel=7, year=8, 
+# kms=9, power=10, doors=11, shift=12, color=13, province=17, country=18
 KEY_INDICES = [2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 17, 18]
 
 def create_business_key(element):
