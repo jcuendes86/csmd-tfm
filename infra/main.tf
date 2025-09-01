@@ -348,7 +348,7 @@ module "cloud-run-cars-prediction-api" {
 
   cr_max_instances   = "1"
   cr_min_instances   = "0"
-  cr_vpc_ingress     = "internal"
+  cr_vpc_ingress     = "all"
 
   depends_on = [
     module.apis,
