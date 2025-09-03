@@ -77,13 +77,9 @@ class ParseAndCleanDoFn(beam.DoFn):
 
                 except (ValueError, TypeError, IndexError) as e:
                     # Si falla la conversión, registramos el error y ponemos el campo a NULL.
-                    # Esto evita que una fila mal formada descarte todo el set de datos.
                     logging.warning(f"Error de conversión en columna '{col_name}' con valor '{value}'. Error: {e}. Se insertará como NULL.")
                     output_dict[col_name] = None
 
-            # Producimos el diccionario limpio como salida de esta etapa.
-
-            # --- Bloque de Validación ---
             # Comprobamos si algún campo requerido es nulo antes de emitir la fila
             is_valid = True
             for required_field in REQUIRED_FIELDS:
