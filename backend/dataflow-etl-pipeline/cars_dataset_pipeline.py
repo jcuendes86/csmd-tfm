@@ -87,10 +87,16 @@ class ParseAndCleanDoFn(beam.DoFn):
             # Comprobamos si algún campo requerido es nulo antes de emitir la fila
             is_valid = True
             for required_field in REQUIRED_FIELDS:
-                if output_dict.get(required_field) is None:
+                # value = row_dict.get(col_name, '').strip()
+                value = output_dict.get(required_field)
+                if not value:
                     logging.warning(f"Descartando fila por valor nulo en campo requerido '{required_field}'. Fila original: {row_dict}")
                     is_valid = False
                     break
+                # if output_dict.get(required_field) is None:
+                #     logging.warning(f"Descartando fila por valor nulo en campo requerido '{required_field}'. Fila original: {row_dict}")
+                #     is_valid = False
+                #     break
             
             # Solo producimos la fila si pasa la validación
             if is_valid:
