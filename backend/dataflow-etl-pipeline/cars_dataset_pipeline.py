@@ -36,7 +36,7 @@ CSV_COLUMNS = [
 class ParseAndCleanDoFn(beam.DoFn):
     def process(self, element):
         # Definimos los campos que no pueden ser nulos para la validación
-        REQUIRED_FIELDS = {'make', 'model', 'year', 'kms', 'province', 'country'}
+        REQUIRED_FIELDS = {'make', 'model', 'year', 'kms', 'power', 'fuel', 'shift', 'color' 'province', 'country'}
 
         try:
             # El delimitador es ';'. StringIO lo trata como un fichero.
