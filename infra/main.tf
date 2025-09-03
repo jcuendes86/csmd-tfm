@@ -129,6 +129,26 @@ module "sa-cloud-build" {
   ]
 }
 
+// Cuenta de servicio para Cloud Run
+module "sa-cloud-run" {
+  source = "./modules/service-account"
+
+  project_id = var.project_id
+
+  sa_account_id = "cloud-run"
+  sa_display_name = "Cloud Run SA"
+  sa_roles = [
+    "roles/cloudbuild.builds.editor",
+    "roles/logging.logWriter",
+    "roles/run.invoker",
+    "roles/secretmanager.secretAccessor"
+  ]
+
+  depends_on = [
+    module.apis
+  ]
+}
+
 // Creacion del repositorio para la imagen Docker del pipeline de Dataflow
 module "artifact-registry" {
   source = "./modules/artifact-registry"
@@ -142,9 +162,86 @@ module "artifact-registry" {
   ]
 }
 
+// Creacion del repositorio para la imagen Docker de la API de prediccion
+module "artifact-registry-api" {
+  source = "./modules/artifact-registry"
+
+  project_id = var.project_id
+  region = var.region
+  artifact_registry_naming = "cars-prediction-api-repo"
+
+  depends_on = [
+    module.apis
+  ]
+}
+
+// Creaccion del secret manager para las API de Cloud Run
+module "sm_cr_secrets" {
+  source = "./modules/secret-manager"
+
+  project_id              = var.project_id
+  secret_id               = "sm-cars-prediction-api"
+  sm_replication_location = var.region
+
+  sm_version_data_template = <<-EOT
+    # Host to deploy the service
+    SERVER_HOST='0.0.0.0'
+
+    # Port to deploy the service
+    SERVER_PORT=8080
+
+    # Control check token of header object
+    TOKEN_HEADER_XFROM='x-from:secure-header'
+
+    # Google Cloud
+    # Name of the project in gcloud
+    GOOGLE_CLOUD_PROJECT='${var.project_id}'
+
+    # Name of the BigQuery dataset
+    BQ_DATASET_NAME='${module.bigquey.dataset}'
+
+    # Name of the BigQuery ML model
+    BQ_ML_MODEL_NAME='cars_prediction_model'
+  EOT
+
+  depends_on = [ 
+    module.apis,
+    module.bigquey
+  ]
+}
+
+// Creacion del servicio de Cloud Run para la API de predicción de coches
+module "cloud-run-cars-prediction-api" {
+  source = "./modules/cloud-run"
+
+  service_name        = "cars-prediction-api"
+  region              = var.region
+
+  cr_service_account  = module.sa-cloud-run.service_account_email
+
+  volume_name         = "env-vars-volume"
+  secret_name         = module.sm_cr_secrets.sm_secret_id
+  volume_mount_path   = "/cars-prediction-api/env"
+
+  cr_container_limit_cpu    = "1"
+  cr_container_limit_memory = "1Gi"
+
+  cr_max_instances   = "1"
+  cr_min_instances   = "0"
+  cr_vpc_ingress     = "all"
+
+  depends_on = [
+    module.apis,
+    module.sa-cloud-run,
+    module.sm_cr_secrets
+  ]
+}
+
 // Creacion del trigger en Cloud Build para construir la imagen Docker del pipeline de Dataflow
 module "cloud-build-dataflow-build-image" {
   source = "./modules/cloud-build"
+
+  count = var.enable_cb_creation ? 1 : 0
 
   project_id                           = var.project_id
   region                               = var.region
@@ -184,21 +281,22 @@ module "cloud-build-dataflow-build-image" {
 
 # Crear el trigger de Cloud Build para ejecutar el job de Dataflow
 module "cloud-build-dataflow-run-job" {
-  source = "./modules/cloud-build"
+  source = "./modules/cloud-build-manual"
+
+  count = var.enable_cb_creation ? 1 : 0
 
   project_id                           = var.project_id
   region                               = var.region
 
-  cloud_build_trigger_name             = "cb-dataflow-flex-template-runner"
-  cloud_build_trigger_filename         = "backend/dataflow-etl-pipeline/dataflow_job.yaml"
-  cloud_build_trigger_repository_owner = "jcuendes86"
-  cloud_build_trigger_repository_name  = "csmd-tfm"
+  cb_trigger_name             = "cb-dataflow-flex-template-runner"
+  cb_trigger_filename         = "backend/dataflow-etl-pipeline/dataflow_job.yaml"
 
-  cloud_build_service_account_email = module.sa-cloud-build.service_account_name
+  cb_repo_uri = "https://github.com/jcuendes86/csmd-tfm"
+  cb_repo_ref = "refs/heads/main"
 
-  cloud_build_trigger_regex_branch = "never-trigger"
+  cb_service_account_email = module.sa-cloud-build.service_account_name
 
-  cloud_build_trigger_substitutions = {
+  cb_trigger_substitutions = {
     _REGION                 = "europe-southwest1"
     _TEMPLATE_BUCKET_NAME   = "gs://${module.bucket_dataflow_templates.storage-name}/templates/cars_dataset_pipeline.json"
     _DATASET_BUCKET_NAME    = "gs://${module.bucket_cars_dataset.storage-name}/coches-segunda-mano.csv"
@@ -221,9 +319,45 @@ module "cloud-build-dataflow-run-job" {
   ]
 }
 
+// Creacion del trigger en Cloud Build para construir y subir la imagen Docker de la API
+module "cloud-build-cars-prediction-api" {
+  source = "./modules/cloud-build"
+
+  count = var.enable_cb_creation ? 1 : 0
+
+  project_id                           = var.project_id
+  region                               = var.region
+
+  cloud_build_trigger_name             = "cb-cars-prediction-api-image-builder"
+  cloud_build_trigger_filename         = "backend/cars-prediction-api/cloudbuild.yaml"
+  cloud_build_trigger_repository_owner = "jcuendes86"
+  cloud_build_trigger_repository_name  = "csmd-tfm"
+
+  cloud_build_service_account_email = module.sa-cloud-build.service_account_name
+
+  included_files = ["backend/cars-prediction-api/**"]
+
+  cloud_build_trigger_substitutions = {
+    _ARTIFACT_REPO_NAME     = module.artifact-registry-api.artifact-registry-name
+    _IMAGE_NAME             = "cars-prediction-api"
+    _IMAGE_TAG              = "latest"
+    _REGION                 = var.region
+    _SERVICE_NAME           = module.cloud-run-cars-prediction-api.cr_service_name
+  }
+
+  depends_on = [
+    module.apis,
+    module.artifact-registry-api,
+    module.sa-cloud-build,
+    module.cloud-run-cars-prediction-api
+  ]
+}
+
 // Creacion del modelo de predicción en BigQuery ML
 module "train_cars_prediction_model" {
   source = "./modules/bigquery-model"
+
+  count = var.enable_model_creation ? 1 : 0
 
   project_id   = var.project_id
   region       = "EU"
@@ -272,132 +406,5 @@ module "train_cars_prediction_model" {
   depends_on = [
     module.apis,
     module.bigquey
-  ]
-}
-
-// Creaccion del secret manager para las API de Cloud Run
-module "sm_cr_secrets" {
-  source = "./modules/secret-manager"
-
-  project_id              = var.project_id
-  secret_id               = "sm-cars-prediction-api"
-  sm_replication_location = var.region
-
-  sm_version_data_template = <<-EOT
-    # Host to deploy the service
-    SERVER_HOST='0.0.0.0'
-
-    # Port to deploy the service
-    SERVER_PORT=8080
-
-    # Control check token of header object
-    TOKEN_HEADER_XFROM='x-from:secure-header'
-
-    # Google Cloud
-    # Name of the project in gcloud
-    GOOGLE_CLOUD_PROJECT='${var.project_id}'
-
-    # Name of the BigQuery dataset
-    BQ_DATASET_NAME='${module.bigquey.dataset}'
-
-    # Name of the BigQuery ML model
-    BQ_ML_MODEL_NAME='cars_prediction_model'
-  EOT
-
-  depends_on = [ 
-    module.apis,
-    module.bigquey
-  ]
-}
-
-// Cuenta de servicio para Cloud Run
-module "sa-cloud-run" {
-  source = "./modules/service-account"
-
-  project_id = var.project_id
-
-  sa_account_id = "cloud-run"
-  sa_display_name = "Cloud Run SA"
-  sa_roles = [
-    "roles/cloudbuild.builds.editor",
-    "roles/logging.logWriter",
-    "roles/run.invoker",
-    "roles/secretmanager.secretAccessor"
-  ]
-
-  depends_on = [
-    module.apis
-  ]
-}
-
-// Creacion del servicio de Cloud Run para la API de predicción de coches
-module "cloud-run-cars-prediction-api" {
-  source = "./modules/cloud-run"
-
-  service_name        = "cars-prediction-api"
-  region              = var.region
-
-  cr_service_account  = module.sa-cloud-run.service_account_email
-
-  volume_name         = "env-vars-volume"
-  secret_name         = module.sm_cr_secrets.sm_secret_id
-  volume_mount_path   = "/cars-prediction-api/env"
-
-  cr_container_limit_cpu    = "1"
-  cr_container_limit_memory = "1Gi"
-
-  cr_max_instances   = "1"
-  cr_min_instances   = "0"
-  cr_vpc_ingress     = "internal"
-
-  depends_on = [
-    module.apis,
-    module.sa-cloud-run,
-    module.sm_cr_secrets
-  ]
-}
-
-// Creacion del repositorio para la imagen Docker de la API de prediccion
-module "artifact-registry-api" {
-  source = "./modules/artifact-registry"
-
-  project_id = var.project_id
-  region = var.region
-  artifact_registry_naming = "cars-prediction-api-repo"
-
-  depends_on = [
-    module.apis
-  ]
-}
-
-// Creacion del trigger en Cloud Build para construir y subir la imagen Docker de la API
-module "cloud-build-cars-prediction-api" {
-  source = "./modules/cloud-build"
-
-  project_id                           = var.project_id
-  region                               = var.region
-
-  cloud_build_trigger_name             = "cb-cars-prediction-api-image-builder"
-  cloud_build_trigger_filename         = "backend/cars-prediction-api/cloudbuild.yaml"
-  cloud_build_trigger_repository_owner = "jcuendes86"
-  cloud_build_trigger_repository_name  = "csmd-tfm"
-
-  cloud_build_service_account_email = module.sa-cloud-build.service_account_name
-
-  included_files = ["backend/cars-prediction-api/**"]
-
-  cloud_build_trigger_substitutions = {
-    _ARTIFACT_REPO_NAME     = module.artifact-registry-api.artifact-registry-name
-    _IMAGE_NAME             = "cars-prediction-api"
-    _IMAGE_TAG              = "latest"
-    _REGION                 = var.region
-    _SERVICE_NAME           = module.cloud-run-cars-prediction-api.cr_service_name
-  }
-
-  depends_on = [
-    module.apis,
-    module.artifact-registry-api,
-    module.sa-cloud-build,
-    module.cloud-run-cars-prediction-api
   ]
 }

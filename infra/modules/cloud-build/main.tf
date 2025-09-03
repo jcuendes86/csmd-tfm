@@ -1,4 +1,4 @@
-resource "google_cloudbuild_trigger" "cb_dataflow" {
+resource "google_cloudbuild_trigger" "cb_trigger" {
   project     = var.project_id
   location    = var.region
   name        = var.cloud_build_trigger_name
