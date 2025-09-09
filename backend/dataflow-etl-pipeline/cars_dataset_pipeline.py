@@ -4,6 +4,7 @@ import csv
 from io import StringIO
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
+import unicodedata
 
 # Esquema de la tabla en BigQuery
 TABLE_SCHEMA = {
@@ -32,6 +33,15 @@ CSV_COLUMNS = [
     'power', 'doors', 'shift', 'color', 'photos', 'is_professional',
     'dealer', 'province', 'country', 'publish_date', 'insert_date'
 ]
+
+def normalize_string(text):
+    """
+    Convierte un string a mayúsculas y elimina las tildes.
+    """
+    # Normaliza el texto para separar los caracteres base de las tildes
+    nfkd_form = unicodedata.normalize('NFD', text)
+    # Filtra para quedarse solo con los caracteres sin tilde y lo convierte a mayúsculas
+    return "".join([c for c in nfkd_form if not unicodedata.combining(c)]).upper()
 
 class ParseAndCleanDoFn(beam.DoFn):
     def process(self, element):
@@ -73,17 +83,14 @@ class ParseAndCleanDoFn(beam.DoFn):
                         formatted_datetime = f"{year}-{month.zfill(2)}-{day.zfill(2)} {parts[1]}:00"
                         output_dict[col_name] = formatted_datetime
                     else: # STRING
-                        output_dict[col_name] = value
+                        # Aplicamos la normalización para mayúsculas y sin tildes.
+                        output_dict[col_name] = normalize_string(value)
 
                 except (ValueError, TypeError, IndexError) as e:
                     # Si falla la conversión, registramos el error y ponemos el campo a NULL.
-                    # Esto evita que una fila mal formada descarte todo el set de datos.
                     logging.warning(f"Error de conversión en columna '{col_name}' con valor '{value}'. Error: {e}. Se insertará como NULL.")
                     output_dict[col_name] = None
 
-            # Producimos el diccionario limpio como salida de esta etapa.
-
-            # --- Bloque de Validación ---
             # Comprobamos si algún campo requerido es nulo antes de emitir la fila
             is_valid = True
             for required_field in REQUIRED_FIELDS:
