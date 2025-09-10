@@ -13,6 +13,8 @@ variable "apis" {
   description = "List of APIs to enable in the project."
   type        = list(string)
   default     = [
+    "apigateway",
+    "apikeys",
     "artifactregistry",
     "cloudbuild",
     "compute",
@@ -20,5 +22,6 @@ variable "apis" {
     "iam",
     "run",
     "secretmanager",
+    "servicecontrol",
   ]
 }

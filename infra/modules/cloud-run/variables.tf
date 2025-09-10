@@ -2,6 +2,11 @@
 #### REQUIRED #####
 ###################
 
+variable "project_id" {
+ description = "The ID of the project in which the resource belongs."
+ type        = string
+}
+
 variable "service_name" {
   description = "Cloud Run service name. Must be unique within a namespace, within a Cloud Run region. Is required when creating resources. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated"
   type        = string
