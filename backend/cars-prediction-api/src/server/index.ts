@@ -1,6 +1,5 @@
-import EnvConfig from './config/envs';
 import PredictService from './app/services/predictService';
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -8,22 +7,29 @@ const port = process.env.PORT || 8080;
 // Inicializar la configuración de entorno
 console.log('INICIANDO...');
 
-app.get('/', (req, res) => {
-    console.log('Endpoint invocado. Usando variables de entorno...');
+// Middleware de seguridad para validar la cabecera x-from
+app.use((req: Request, res: Response, next: NextFunction) => {
+    const fromHeader = req.headers['x-from'];
+    const expectedHeader = process.env.TOKEN_HEADER_XFROM;
 
-    // Usa las variables de entorno cargadas a través del objeto 'config'
-    const message = 'Hola desde la API de predicción de coches en Cloud Run.';
-    // const message = `
-    //     ¡Hola desde la API en Cloud Run!
-    //     La API Key es: ${config.apiKey ? 'Cargada correctamente (oculta por seguridad)' : 'No cargada'}
-    //     La URL de la BBDD es: ${config.databaseUrl}
-    //     Entorno (NODE_ENV): ${config.nodeEnv}
-    // `;
+    if (!fromHeader || fromHeader !== expectedHeader) {
+        console.log('RES -- ', res.statusMessage);
+        return res.status(401).json({
+            error: 'Unauthorized',
+            message: 'Permiso denegado.'
+        });
+    }
+
+    next();
+});
+
+app.get('/', (req: Request, res: Response) => {
+    const message = 'Its OK!';
     
     res.send(message);
 });
 
-app.post('/predict', express.json(), (req, res) => {
+app.post('/predict', express.json(), (req: Request, res: Response) => {
     // Aquí manejarías la lógica de predicción usando los datos del coche enviados en el cuerpo de la solicitud.
     const carData = req.body; // Asegúrate de validar y tipar esto adecuadamente.
     console.log('Datos recibidos para predicción:', carData);
