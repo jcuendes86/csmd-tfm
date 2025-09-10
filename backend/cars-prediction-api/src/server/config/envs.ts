@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
-import { Environment } from '../app/tools';
 
 class EnvConfig {
 

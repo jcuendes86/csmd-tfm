@@ -3,6 +3,7 @@
 
 # Variables de entorno
 infra/.env
+backend/cars-prediction-api/.env
 
 # Credenciales Cuenta de Servicio
 infra/cloud-tfm.json
