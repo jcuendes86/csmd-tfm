@@ -2,8 +2,7 @@
 .idea
 
 # Variables de entorno
-infra/.env
-backend/cars-prediction-api/.env
+.env
 
 # Credenciales Cuenta de Servicio
 infra/cloud-tfm.json

@@ -1,0 +1,75 @@
+swagger: "2.0"
+info:
+  title: "${API_TITLE}"
+  description: "Cars Prediction API."
+  version: "1.0.0"
+schemes:
+  - "https"
+x-google-backend:
+  address: ${CLOUD_RUN_URL}
+securityDefinitions:
+  api_key:
+    type: "apiKey"
+    name: "x-api-key"
+    in: "header"
+security:
+  - api_key: []
+paths:
+  /:
+    get:
+      summary: Health check endpoint.
+      operationId: healthCheck
+      responses:
+        200:
+          description: OK
+  /predict:
+    post:
+      summary: Get car price prediction.
+      operationId: predict
+      parameters:
+        - in: "body"
+          name: "car"
+          schema:
+            $ref: "#/definitions/CarInfo"
+      responses:
+        200:
+          description: OK
+definitions:
+  CarInfo:
+    type: object
+    required:
+      - make
+      - model
+      - fuel
+      - year
+      - kms
+      - power
+      - doors
+      - shift
+      - color
+      - province
+      - country
+    properties:
+      make:
+        type: string
+      model:
+        type: string
+      fuel:
+        type: string
+      year:
+        type: integer
+      kms:
+        type: integer
+      power:
+        type: integer
+      doors:
+        type: integer 
+      shift:
+        type: string
+      color:
+        type: string
+      province:
+        type: string
+      country:
+        type: string
+            

@@ -141,7 +141,27 @@ module "sa-cloud-run" {
     "roles/cloudbuild.builds.editor",
     "roles/logging.logWriter",
     "roles/run.invoker",
+    "roles/bigquery.dataEditor",
+    "roles/bigquery.jobUser",
     "roles/secretmanager.secretAccessor"
+  ]
+
+  depends_on = [
+    module.apis
+  ]
+}
+
+// Cuenta de servicio para API Gateway
+module "sa-api-gateway" {
+  source = "./modules/service-account"
+
+  project_id = var.project_id
+
+  sa_account_id = "api-gateway"
+  sa_display_name = "API Gateway SA"
+  sa_roles = [
+    "roles/run.invoker",
+    "roles/iam.serviceAccountTokenCreator"
   ]
 
   depends_on = [
@@ -191,7 +211,7 @@ module "sm_cr_secrets" {
     SERVER_PORT=8080
 
     # Control check token of header object
-    TOKEN_HEADER_XFROM='x-from:secure-header'
+    TOKEN_HEADER_XFROM='secure-api-gateway'
 
     # Google Cloud
     # Name of the project in gcloud
@@ -214,6 +234,7 @@ module "sm_cr_secrets" {
 module "cloud-run-cars-prediction-api" {
   source = "./modules/cloud-run"
 
+  project_id          = var.project_id
   service_name        = "cars-prediction-api"
   region              = var.region
 
@@ -234,6 +255,98 @@ module "cloud-run-cars-prediction-api" {
     module.apis,
     module.sa-cloud-run,
     module.sm_cr_secrets
+  ]
+}
+
+// Creacion del API Gateway para exponer la API de predicción
+module "api-gateway" {
+  source = "./modules/api-gateway"
+
+  project_id = var.project_id
+  api_id = "cars-prediction-api"
+  region     = var.region
+
+  openapi_file_path = "${path.root}/modules/api-gateway/openapi.yaml"
+  cloud_run_url = module.cloud-run-cars-prediction-api.cr_url
+  api_config_sa_email = module.sa-api-gateway.service_account_email
+
+  depends_on = [
+    module.apis,
+    module.sa-api-gateway,
+    module.cloud-run-cars-prediction-api
+  ]
+}
+
+resource "time_sleep" "wait_for_api_config" {
+  create_duration = "15s"
+  depends_on      = [
+    module.api-gateway
+  ]
+}
+
+# Token del provider ya autenticado
+data "google_client_config" "default" {}
+
+data "http" "apigw_api" {
+  url = "https://apigateway.googleapis.com/v1/projects/${var.project_id}/locations/global/apis/cars-prediction-api"
+
+  request_headers = {
+    Authorization = "Bearer ${data.google_client_config.default.access_token}"
+    Accept        = "application/json"
+  }
+
+  # Espera a que la ApiConfig quede registrada antes de consultar
+  depends_on = [
+    module.api-gateway
+  ]
+}
+
+# Parseo del JSON para sacar el managedService
+locals {
+  apigw_api_body     = jsondecode(data.http.apigw_api.response_body)
+  managed_service    = local.apigw_api_body.managedService
+}
+
+resource "google_project_service" "enable_managed_service" {
+  project            = var.project_id
+  service            = local.managed_service
+  disable_on_destroy = true
+
+  depends_on = [time_sleep.wait_for_api_config]
+}
+
+// Creacion de la API Key restringida al managed service del API Gateway
+module "gateway_key" {
+  source = "./modules/api-keys"
+
+  project_id          = var.project_id
+
+  apikeys_name        = "cars-prediction-api-client-key"
+  apikeys_display_name = "API key restringida al API Gateway cars-prediction-api"
+  managed_service     = local.managed_service
+
+
+  depends_on = [
+    module.apis,
+    module.api-gateway,
+    local.managed_service,
+    google_project_service.enable_managed_service
+  ]
+}
+
+// Creaccion del secret manager para almacenar la API Key del API Gateway
+module "sm_gateway_key" {
+  source = "./modules/secret-manager"
+
+  project_id              = var.project_id
+  secret_id               = "sm-gateway-api-key"
+  sm_replication_location = var.region
+
+  sm_version_data_template = module.gateway_key.api_key_string
+
+  depends_on = [ 
+    module.apis,
+    module.gateway_key,
   ]
 }
 

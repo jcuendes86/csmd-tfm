@@ -1,4 +1,5 @@
 resource "google_cloud_run_service" "service" {
+  project       = var.project_id
   name     = var.service_name
   location = var.region
 
