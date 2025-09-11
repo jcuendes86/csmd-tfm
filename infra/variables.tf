@@ -4,7 +4,7 @@
 variable "project_id" {
   description = "The ID of the Google Cloud project to use."
   type        = string
-  default     = "csmd-tfm-jcuendes-pruebas-tf"
+  default     = "csmd-tfm-jcuendes"
 }
 
 variable "region" {
