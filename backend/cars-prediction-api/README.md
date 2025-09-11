@@ -1,6 +1,6 @@
 # API de Predicción de Precios de Coches
 
-Esta API ha sido diseñada para exponer un modelo de Machine Learning capaz de predecir el precio de coches de segunda mano basado en sus características.
+Esta API ha sido diseñada para exponer un modelo de BigQuery ML capaz de predecir el precio de coches de segunda mano basado en sus características.
 
 ## Características
 
@@ -10,7 +10,7 @@ Esta API ha sido diseñada para exponer un modelo de Machine Learning capaz de p
 
 ##  Prerequisites
 
-- [Node.js](https://nodejs.org/) (versión 18 o superior)
+- [Node.js](https://nodejs.org/)
 - [npm](https://www.npmjs.com/)
 
 ## Instalación
@@ -25,7 +25,7 @@ Esta API ha sido diseñada para exponer un modelo de Machine Learning capaz de p
    ```
 3. Instala las dependencias:
    ```bash
-   npm install
+   npm run build
    ```
 
 ## Configuración
@@ -37,8 +37,6 @@ Para que la aplicación funcione correctamente, es necesario configurar las vari
 
 ### Variables de Entorno
 
-- `SECRET_ENV_FILE`: Ruta al secret en Google Secret Manager (ej: `projects/PROJECT_ID/secrets/SECRET_NAME/versions/LATEST`).
-- `SERVER_LOCAL_ENV`: `true` si se ejecuta en local, `false` en producción.
 - `SERVER_HOST`: Host para el servidor (por defecto `localhost`).
 - `SERVER_PORT`: Puerto para el servidor (por defecto `8080`).
 - `TOKEN_HEADER_XFROM`: Token de seguridad para la cabecera `x-from`.
@@ -53,23 +51,8 @@ Para que la aplicación funcione correctamente, es necesario configurar las vari
 Para iniciar el servidor en modo de desarrollo con recarga automática:
 
 ```bash
-npm run dev
+npm run start:watch
 ```
-
-### Entorno de Producción
-
-La aplicación está diseñada para ser ejecutada en un contenedor de Docker.
-
-1. **Construir la imagen de Docker:**
-   ```bash
-   docker build -t cars-prediction-api .
-   ```
-
-2. **Ejecutar el contenedor:**
-   ```bash
-   docker run -p 8080:8080 -e VAR_1=VALOR_1 -e VAR_2=VALOR_2 cars-prediction-api
-   ```
-   *Nota: Asegúrate de pasar las variables de entorno necesarias utilizando el flag `-e`.*
 
 ## Endpoints de la API
 
@@ -83,12 +66,17 @@ El body de la petición debe ser un objeto JSON con las características del veh
 
 ```json
 {
-  "brand": "BMW",
-  "model": "Serie 3",
-  "year": 2018,
-  "km": 50000,
-  "power": 190,
-  "fuel_type": "Diésel"
+    "make": "Toyota",
+    "model": "Rav4",
+    "fuel": "Híbrido",
+    "year": 2020,
+    "kms": 40000,
+    "power": 140,
+    "doors": 5,
+    "shift": "Automático",
+    "color": "Blanco",
+    "province": "Ciudad Real",
+    "country": "Spain"
 }
 ```
 
@@ -96,7 +84,12 @@ El body de la petición debe ser un objeto JSON con las características del veh
 
 ```json
 {
-  "predicted_price": 25000
+    "status": 200,
+    "message": "Predicción realizada con éxito.",
+    "prediction": {
+        "predicted_log_price": 9.755769729614258,
+        "predicted_price": 17253.490151448874
+    }
 }
 ```
 
@@ -104,6 +97,8 @@ El body de la petición debe ser un objeto JSON con las características del veh
 
 El despliegue está automatizado para **Google Cloud Run** mediante **Cloud Build**. Al hacer push a la rama principal, un trigger de Cloud Build se encargará de:
 
-1. Construir la imagen de Docker.
-2. Subir la imagen a Google Artifact Registry.
-3. Desplegar la nueva versión en Cloud Run.
+1. Instalar las dependencias necesarias
+2. Construir la imagen de Docker
+3. Subir la imagen a Google Artifact Registry
+4. Desplegar la nueva versión en Cloud Run
+5. Migrar el tráfico a la nueva versión desplegada
