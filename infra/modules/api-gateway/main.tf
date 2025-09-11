@@ -29,6 +29,10 @@ resource "google_api_gateway_api_config" "api_config" {
             )
         }
     }
+
+    depends_on = [ 
+        google_api_gateway_api.api
+    ]
 }
 
 resource "google_api_gateway_gateway" "api_gateway" {
@@ -38,4 +42,9 @@ resource "google_api_gateway_gateway" "api_gateway" {
     gateway_id    = "${var.api_id}-gateway"
     api_config    = google_api_gateway_api_config.api_config.name
     region        = var.region
+
+    depends_on = [
+        google_api_gateway_api.api,
+        google_api_gateway_api_config.api_config
+    ]
 }

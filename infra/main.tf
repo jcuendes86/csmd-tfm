@@ -313,6 +313,12 @@ resource "google_project_service" "enable_managed_service" {
   disable_on_destroy = true
 
   depends_on = [time_sleep.wait_for_api_config]
+
+  lifecycle {
+    ignore_changes = [
+      service,
+    ]
+  }
 }
 
 // Creacion de la API Key restringida al managed service del API Gateway

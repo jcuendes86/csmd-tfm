@@ -20,89 +20,75 @@ resource "google_bigquery_table" "table" {
     {
       "name": "make",
       "type": "STRING",
-      "mode": "NULLABLE",
-      "description": "make"
+      "mode": "NULLABLE"
     },
     {
       "name": "model",
       "type": "STRING",
-      "mode": "NULLABLE",
-      "description": "model"
+      "mode": "NULLABLE"
     },
     {
       "name": "version",
       "type": "STRING",
-      "mode": "NULLABLE",
-      "description": "version"
+      "mode": "NULLABLE"
     },
     {
       "name": "price",
       "type": "FLOAT",
-      "mode": "NULLABLE",
-      "description": "price"
+      "mode": "NULLABLE"
     },
     {
       "name": "fuel",
       "type": "STRING",
-      "mode": "NULLABLE",
-      "description": "fuel"
+      "mode": "NULLABLE"
     },
     {
       "name": "year",
       "type": "INTEGER",
-      "mode": "NULLABLE",
-      "description": "year"
+      "mode": "NULLABLE"
     },
 
     {
       "name": "kms",
       "type": "INTEGER",
-      "mode": "NULLABLE",
-      "description": "kms"
+      "mode": "NULLABLE"
     },
 
     {
       "name": "power",
       "type": "INTEGER",
-      "mode": "NULLABLE",
-      "description": "power"
+      "mode": "NULLABLE"
     },
 
     {
       "name": "doors",
       "type": "INTEGER",
-      "mode": "NULLABLE",
-      "description": "doors"
+      "mode": "NULLABLE"
     },
     {
       "name": "shift",
       "type": "STRING",
-      "mode": "NULLABLE",
-      "description": "shift"
+      "mode": "NULLABLE"
     },
     {
       "name": "color",
       "type": "STRING",
-      "mode": "NULLABLE",
-      "description": "color"
+      "mode": "NULLABLE"
     },
     {
       "name": "province",
       "type": "STRING",
-      "mode": "NULLABLE",
-      "description": "province"
+      "mode": "NULLABLE"
     },
     {
       "name": "country",
       "type": "STRING",
-      "mode": "NULLABLE",
-      "description": "country"
+      "mode": "NULLABLE"
     },
     {
       "name": "publish_date",
       "type": "DATETIME",
-      "mode": "NULLABLE",
-      "description": "publish_date"
+      "mode": "NULLABLE"
     }
   ]
   EOF
