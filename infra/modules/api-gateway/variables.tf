@@ -1,33 +1,33 @@
-###################
-#### REQUIRED #####
-###################
+# ==================================================================================
+# VARIABLES REQUERIDAS PARA EL MÓDULO API GATEWAY
+# ==================================================================================
 
 variable "project_id" {
- description = "The ID of the project in which the resource belongs."
- type        = string
+  description = "ID del proyecto de Google Cloud al que pertenece el recurso."
+  type        = string
 }
 
 variable "api_id" {
-  description = "API Gateway API ID. Must be unique within a project and region, within a Cloud API Gateway instance. Is required when creating resources. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated"
+  description = "ID único para la API de API Gateway dentro del proyecto y la región."
   type        = string
 }
 
 variable "region" {
-  description = "The location of the cloud run instance. eg us-central1"
+  description = "Región donde se desplegará la instancia de API Gateway."
   type        = string
 }
 
 variable "openapi_file_path" {
-  description = "The path to the OpenAPI specification file."
+  description = "Ruta al fichero de especificación OpenAPI (swagger.yaml)."
   type        = string
 }
 
 variable "cloud_run_url" {
-  description = "The URL of the Cloud Run service to be used in the OpenAPI spec."
+  description = "URL del servicio de Cloud Run que se utilizará en la especificación OpenAPI."
   type        = string
 }
 
 variable "api_config_sa_email" {
-  description = "The email of the service account that the API Gateway will use to sign the ID token when calling the Cloud Run service."
+  description = "Email de la cuenta de servicio que API Gateway utilizará para firmar el token de ID al llamar al servicio de Cloud Run."
   type        = string
 }

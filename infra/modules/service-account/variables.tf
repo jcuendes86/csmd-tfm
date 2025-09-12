@@ -1,40 +1,44 @@
-###################
-#### REQUIRED #####
-###################
+# ==================================================================================
+# VARIABLES PARA EL MÓDULO SERVICE ACCOUNT
+# ==================================================================================
+
+# ---------------------------------
+# Variables Requeridas
+# ---------------------------------
 
 variable "project_id" {
-  description = "The ID of the project in which the resource belongs."
+  description = "ID del proyecto de Google Cloud al que pertenece el recurso."
   type        = string
 }
 
 variable "sa_account_id" {
-  description = "The account id that is used to generate the service account email address and a stable unique id."
+  description = "ID de la cuenta que se utilizará para generar el email de la cuenta de servicio."
   type        = string
 }
 
 variable "sa_display_name" {
-  description = " The display name for the service account. Can be updated without creating a new resource."
+  description = "Nombre para mostrar de la cuenta de servicio."
   type        = string
 }
 
-###################
-#### OPTIONAL #####
-###################
+# ---------------------------------
+# Variables Opcionales
+# ---------------------------------
 
 variable "sa_description" {
-  description = " A text description of the service account."
+  description = "Descripción de la cuenta de servicio."
   type        = string
   default     = null
 }
 
 variable "sa_disabled" {
-  description = "Whether a service account is disabled or not. Defaults to false. This field has no effect during creation. Must be set after creation to disable a service account."
+  description = "Indica si la cuenta de servicio está deshabilitada o no."
   type        = bool
   default     = false
 }
 
 variable "sa_roles" {
-  description = "List of roles that should be applied on the Service Account"
+  description = "Lista de roles de IAM que se aplicarán a la cuenta de servicio."
   type        = list(string)
   default     = []
 }

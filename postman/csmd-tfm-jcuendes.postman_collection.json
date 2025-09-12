@@ -7,6 +7,257 @@
 	},
 	"item": [
 		{
+			"name": "Testing",
+			"item": [
+				{
+					"name": "high_price",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "default"
+							},
+							{
+								"key": "x-from",
+								"value": "{{x-from}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"make\": \"VOLKSWAGEN\",\n    \"model\": \"GOLF\",\n    \"fuel\": \"DIESEL\",\n    \"year\": 2020,\n    \"kms\": 15000,\n    \"power\": 120,\n    \"doors\": 5,\n    \"shift\": \"MANUAL\",\n    \"color\": \"NEGRO\",\n    \"province\": \"SANTANDER\",\n    \"country\": \"SPAIN\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{api-host}}/predict",
+							"protocol": "https",
+							"host": [
+								"{{api-host}}"
+							],
+							"path": [
+								"predict"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "low_price",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "default"
+							},
+							{
+								"key": "x-from",
+								"value": "{{x-from}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"make\": \"AUDI\",\n    \"model\": \"A4\",\n    \"fuel\": \"GASOLINA\",\n    \"year\": 2000,\n    \"kms\": 230000,\n    \"power\": 220,\n    \"doors\": 5,\n    \"shift\": \"MANUAL\",\n    \"color\": \"BLANCO\",\n    \"province\": \"SANTANDER\",\n    \"country\": \"SPAIN\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{api-host}}/predict",
+							"protocol": "https",
+							"host": [
+								"{{api-host}}"
+							],
+							"path": [
+								"predict"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "luxury_car",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "default"
+							},
+							{
+								"key": "x-from",
+								"value": "{{x-from}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"make\": \"FERRARI\",\n    \"model\": \"811\",\n    \"fuel\": \"GASOLINA\",\n    \"year\": 2023,\n    \"kms\": 10000,\n    \"power\": 800,\n    \"doors\": 3,\n    \"shift\": \"AUTOMATICO\",\n    \"color\": \"ROJO\",\n    \"province\": \"SEVILLA\",\n    \"country\": \"SPAIN\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{api-host}}/predict",
+							"protocol": "https",
+							"host": [
+								"{{api-host}}"
+							],
+							"path": [
+								"predict"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "medium_price",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "default"
+							},
+							{
+								"key": "x-from",
+								"value": "{{x-from}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"make\": \"KIA\",\n    \"model\": \"SPORTAGE\",\n    \"fuel\": \"GASOLINA\",\n    \"year\": 2020,\n    \"kms\": 50000,\n    \"power\": 140,\n    \"doors\": 5,\n    \"shift\": \"AUTOMATICO\",\n    \"color\": \"GRIS\",\n    \"province\": \"SEVILLA\",\n    \"country\": \"SPAIN\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{api-host}}/predict",
+							"protocol": "https",
+							"host": [
+								"{{api-host}}"
+							],
+							"path": [
+								"predict"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "very_high_price",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "default"
+							},
+							{
+								"key": "x-from",
+								"value": "{{x-from}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"make\": \"BMW\",\n    \"model\": \"SERIE 6\",\n    \"fuel\": \"GASOLINA\",\n    \"year\": 2018,\n    \"kms\": 150000,\n    \"power\": 320,\n    \"doors\": 2,\n    \"shift\": \"AUTOMATICO\",\n    \"color\": \"NEGRO\",\n    \"province\": \"MADRID\",\n    \"country\": \"SPAIN\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{api-host}}/predict",
+							"protocol": "https",
+							"host": [
+								"{{api-host}}"
+							],
+							"path": [
+								"predict"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "very_low_price",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "{{x-api-key}}",
+								"type": "default"
+							},
+							{
+								"key": "x-from",
+								"value": "{{x-from}}",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"make\": \"DAEWOO\",\n    \"model\": \"KALOS\",\n    \"fuel\": \"GASOLINA\",\n    \"year\": 2003,\n    \"kms\": 130500,\n    \"power\": 72,\n    \"doors\": 3,\n    \"shift\": \"MANUAL\",\n    \"color\": \"AZUL\",\n    \"province\": \"CADIZ\",\n    \"country\": \"SPAIN\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{api-host}}/predict",
+							"protocol": "https",
+							"host": [
+								"{{api-host}}"
+							],
+							"path": [
+								"predict"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Predict",
 			"request": {
 				"auth": {

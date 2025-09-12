@@ -1,35 +1,38 @@
-###################
-#### REQUIRED #####
-###################
+# ==================================================================================
+# VARIABLES PARA EL MÓDULO ARTIFACT REGISTRY
+# ==================================================================================
+
+# ---------------------------------
+# Variables Requeridas
+# ---------------------------------
 
 variable "project_id" {
-  description = ") The ID of the project in which the resource belongs. If it is not provided, the provider project is used."
+  description = "ID del proyecto de Google Cloud al que pertenece el recurso."
   type        = string
 }
 
 variable "region" {
-  description = "The name of the location this repository is located in."
+  description = "Ubicación donde se creará el repositorio."
   type        = string
 }
 
 variable "artifact_registry_naming" {
-  description = "The last part of the repository name"
+  description = "Identificador único del repositorio (la parte final del nombre)."
   type        = string
 }
 
-
-###################
-#### OPTIONAL #####
-###################
+# ---------------------------------
+# Variables Opcionales
+# ---------------------------------
 
 variable "artifact_registry_description" {
-  description = "The description of the repository."
+  description = "Descripción del repositorio."
   type        = string
   default     = "Repositorio para las imágenes de las plantillas de Dataflow."
 }
 
 variable "artifact_format" {
-  description = "The format of packages that are stored in the repository."
+  description = "Formato de los paquetes que se almacenarán en el repositorio."
   type        = string
   default     = "DOCKER"
 }

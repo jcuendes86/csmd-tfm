@@ -1,3 +1,7 @@
+# ==================================================================================
+# RECURSO: API GATEWAY API
+# Crea la definición principal de la API en API Gateway.
+# ==================================================================================
 resource "google_api_gateway_api" "api" {
     provider = google-beta
 
@@ -5,6 +9,10 @@ resource "google_api_gateway_api" "api" {
     api_id     = var.api_id
 }
 
+# ==================================================================================
+# RECURSO: CONFIGURACIÓN DE LA API
+# Define la configuración de la API, incluyendo el backend y el documento OpenAPI.
+# ==================================================================================
 resource "google_api_gateway_api_config" "api_config" {
     provider = google-beta
 
@@ -35,6 +43,10 @@ resource "google_api_gateway_api_config" "api_config" {
     ]
 }
 
+# ==================================================================================
+# RECURSO: GATEWAY
+# Crea el gateway que expone la configuración de la API al exterior.
+# ==================================================================================
 resource "google_api_gateway_gateway" "api_gateway" {
     provider = google-beta
 

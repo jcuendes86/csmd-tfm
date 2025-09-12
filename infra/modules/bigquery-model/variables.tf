@@ -1,52 +1,55 @@
-###################
-#### REQUIRED #####
-###################
+# ==================================================================================
+# VARIABLES PARA EL MÓDULO BIGQUERY MODEL
+# ==================================================================================
+
+# ---------------------------------
+# Variables Requeridas
+# ---------------------------------
 
 variable "project_id" {
-  description = "The ID of the Google Cloud project to use."
-  type = string
+  description = "ID del proyecto de Google Cloud donde se ejecutará el trabajo."
+  type        = string
 }
 
 variable "region" {
-  description = "The name region in which resources will be created."
+  description = "Región donde se crearán los recursos."
   type        = string
 }
 
-
 variable "bq_job_id" {
-    description = "The BigQuery job id."
-    type        = string
+  description = "ID para el trabajo (job) de BigQuery."
+  type        = string
 }
 
 variable "bq_job_query" {
-  description = "The query to be executed in the BigQuery job."
+  description = "Consulta que se ejecutará en el trabajo de BigQuery."
   type        = string
 }
 
-###################
-#### OPTIONAL #####
-###################
+# ---------------------------------
+# Variables Opcionales
+# ---------------------------------
 
 variable "bq_job_query_cache" {
-  description = "Value to enable or disable query cache"
-  type    = bool
-  default = false
+  description = "Habilita o deshabilita el uso de la caché para la consulta."
+  type        = bool
+  default     = false
 }
 
 variable "bq_job_create_disposition" {
-  description = "Value to specify the create disposition for the job"
-  type    = string
-  default = ""
+  description = "Especifica la acción a tomar cuando se crea la tabla de destino."
+  type        = string
+  default     = ""
 }
 
 variable "bq_job_write_disposition" {
-  description = "Value to specify the write disposition for the job"
-  type    = string
-  default = ""
+  description = "Especifica la acción a tomar cuando los datos se escriben en la tabla."
+  type        = string
+  default     = ""
 }
 
 variable "bq_job_lifecycle_ignore_changes_active" {
-  description = "Whether to ignore changes to job_id in the lifecycle block"
-  type    = bool
-  default = "false"
+  description = "Activa o desactiva el bloqueo del ciclo de vida para ignorar cambios en job_id."
+  type        = bool
+  default     = false
 }

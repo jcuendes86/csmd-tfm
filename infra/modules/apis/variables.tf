@@ -1,16 +1,22 @@
-###################
-#### REQUIRED #####
-###################
+# ==================================================================================
+# VARIABLES REQUERIDAS PARA EL MÓDULO APIS
+# ==================================================================================
 
-# Global
+# ---------------------------------
+# Configuración Global
+# ---------------------------------
+
 variable "project_id" {
-  description = "The ID of the Google Cloud project to use."
+  description = "ID del proyecto de Google Cloud donde se habilitarán las APIs."
   type        = string
 }
 
-# API
+# ---------------------------------
+# Configuración de APIs
+# ---------------------------------
+
 variable "apis" {
-  description = "List of APIs to enable in the project."
+  description = "Lista de APIs que se habilitarán en el proyecto."
   type        = list(string)
   default     = [
     "apigateway",

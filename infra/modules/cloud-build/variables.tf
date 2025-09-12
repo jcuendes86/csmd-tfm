@@ -1,68 +1,71 @@
-###################
-#### REQUIRED #####
-###################
+# ==================================================================================
+# VARIABLES PARA EL MÓDULO CLOUD BUILD
+# ==================================================================================
+
+# ---------------------------------
+# Variables Requeridas
+# ---------------------------------
 
 variable "project_id" {
-  description = ") The ID of the project in which the resource belongs. If it is not provided, the provider project is used."
+  description = "ID del proyecto de Google Cloud al que pertenece el recurso."
   type        = string
 }
 
 variable "region" {
-  description = "The region to deploy resources in. This is used for regional resources."
-  type = string
+  description = "Región donde se desplegarán los recursos."
+  type        = string
 }
 
 variable "cloud_build_trigger_name" {
-  description = "The name of the Cloud Build trigger."
+  description = "Nombre del trigger de Cloud Build."
   type        = string
 }
 
 variable "cloud_build_trigger_filename" {
-  description = "Path, from the source root, to a file whose contents is used for the template."
+  description = "Ruta al fichero de configuración de la compilación (cloudbuild.yaml)."
   type        = string
 }
 
 variable "cloud_build_trigger_repository_owner" {
-  description = "The owner of the repository"
+  description = "Propietario del repositorio de GitHub."
   type        = string
 }
 
 variable "cloud_build_trigger_repository_name" {
-  description = "The name of the repository"
+  description = "Nombre del repositorio de GitHub."
   type        = string
 }
 
 variable "cloud_build_service_account_email" {
-  description = "The service account email"
+  description = "Email de la cuenta de servicio que utilizará Cloud Build."
   type        = string
 }
 
-
-###################
-#### OPTIONAL #####
-###################
+# ---------------------------------
+# Variables Opcionales
+# ---------------------------------
 
 variable "cloud_build_trigger_description" {
-  description = "The description of the Cloud Build trigger."
+  description = "Descripción del trigger de Cloud Build."
   type        = string
   default     = "Construye la plantilla de Dataflow al hacer push a la rama main en GitHub."
 }
 
 variable "cloud_build_trigger_regex_branch" {
-  description = "Regex branch"
+  description = "Expresión regular para la rama que activará el trigger."
   type        = string
   default     = "^main$"
 }
 
 variable "cloud_build_trigger_substitutions" {
-  description = "Substitutions data for Build resource."
+  description = "Mapa de sustituciones para pasar a la compilación."
   type        = map(string)
   default     = {}
 }
 
 variable "included_files" {
-  description = "value"
-  type = list(string)
-  default = []
+  description = "Lista de ficheros que, si se modifican, activarán el trigger."
+  type        = list(string)
+  default     = []
 }
 
