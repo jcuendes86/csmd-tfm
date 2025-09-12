@@ -1,66 +1,76 @@
-###################
-#### REQUIRED #####
-###################
+# ==================================================================================
+# VARIABLES PARA EL MÓDULO BIGQUERY
+# ==================================================================================
 
-# Global
+# ---------------------------------
+# Variables Requeridas
+# ---------------------------------
+
 variable "project_id" {
-  description = "The ID of the Google Cloud project to use."
-  type = string
-}
-
-# Dataset
-variable "bq_dataset_id" {
-    description = "The ID of the BigQuery dataset to create. This must be unique across all datasets in the project."
-    type        = string
-}
-
-variable "bq_table_id" {
-  description = "A unique ID for the resource. Changing this forces a new resource to be created."
+  description = "ID del proyecto de Google Cloud donde se crearán los recursos de BigQuery."
   type        = string
 }
 
-###################
-#### OPTIONAL #####
-###################
+variable "bq_dataset_id" {
+  description = "ID único para el dataset de BigQuery que se va a crear."
+  type        = string
+}
 
-# Dataset
+variable "bq_table_id" {
+  description = "ID único para la tabla de BigQuery que se va a crear."
+  type        = string
+}
+
+# ---------------------------------
+# Variables Opcionales (Dataset)
+# ---------------------------------
+
 variable "bq_dataset_location" {
-  type    = string
-  default = "EU"
+  description = "Ubicación del dataset de BigQuery."
+  type        = string
+  default     = "EU"
 }
 
 variable "bq_dataset_description" {
-  type    = string
-  default = "BigQuery dataset created by Terraform" // Descripción del dataset, si no se especifica se usa un valor por defecto
+  description = "Descripción para el dataset de BigQuery."
+  type        = string
+  default     = "BigQuery dataset creado por Terraform"
 }
 
 variable "bq_dataset_labels" {
-  type    = map(string)
-  default = null
+  description = "Etiquetas para el dataset de BigQuery."
+  type        = map(string)
+  default     = null
 }
 
 variable "bq_dataset_delete_contents_on_destroy" {
-  type    = bool
-  default = true // Si se establece en true, se eliminarán los contenidos del dataset al destruir el recurso. Por defecto es true.
+  description = "Si se establece en true, se eliminará el contenido del dataset al destruir el recurso."
+  type        = bool
+  default     = true
 }
 
-# Table
+# ---------------------------------
+# Variables Opcionales (Tabla)
+# ---------------------------------
+
 variable "bq_table_expiration_time" {
-  description = "The time when this table expires, in milliseconds since the epoch. If not present, the table will persist indefinitely. Expired tables will be deleted and their storage reclaimed."
+  description = "Tiempo en milisegundos desde la época en que la tabla expira. Si no se especifica, la tabla persistirá indefinidamente."
   default     = null
-
 }
+
 variable "bq_table_friendly_name" {
-  description = "A descriptive name for the table"
+  description = "Nombre descriptivo para la tabla."
   default     = ""
 }
+
 variable "bq_table_clustering" {
-  description = "Specifies column names to use for data clustering. Up to four top_level columns are allowed, and should be specified in descending priority order."
+  description = "Lista de nombres de columnas para usar en el clustering de datos."
   type        = list(any)
   default     = null
 }
+
 variable "bq_table_deletion_protection" {
-  description = "Whether or not to allow Terraform to destroy the instance. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the instance will fail."
+  description = "Protección contra la eliminación de la tabla. Si es true, Terraform no podrá destruir la instancia."
   type        = bool
   default     = true
 }

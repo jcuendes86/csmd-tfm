@@ -1,52 +1,56 @@
-###################
-#### REQUIRED #####
-###################
+# ==================================================================================
+# VARIABLES PARA EL MÓDULO NETWORK
+# ==================================================================================
+
+# ---------------------------------
+# Variables Requeridas
+# ---------------------------------
 
 variable "project_id" {
-  description = "The ID of the Google Cloud project to use."
-  type = string
+  description = "ID del proyecto de Google Cloud donde se creará la red."
+  type        = string
 }
 
 variable "region" {
-  description = "The region to deploy resources in. This is used for regional resources."
-  type = string
+  description = "Región donde se desplegarán los recursos de red."
+  type        = string
 }
 
 variable "vpc_name" {
-  description = "Name of the vpc."
+  description = "Nombre de la red VPC."
   type        = string
 }
 
-###################
-#### OPTIONAL #####
-###################
+# ---------------------------------
+# Variables Opcionales
+# ---------------------------------
 
 variable "vpc_description" {
-  description = "An optional description of this resource. The resource must be recreated to modify this field."
+  description = "Descripción opcional para la red VPC."
   type        = string
-  default     = "Main custom VPC"
+  default     = "VPC principal personalizada"
 }
 
 variable "vpc_auto_create_subnetworks" {
-  description = "When set to true, the network is created in auto subnet mode and it will create a subnet for each region automatically across the 10.128.0.0/9 address range. When set to false, the network is created in custom subnet mode so the user can explicitly connect subnetwork resources. Default false"
+  description = "Si es true, la red se crea en modo automático, creando una subred por región. Si es false, se crea en modo personalizado."
   type        = bool
   default     = true
 }
 
 variable "vpc_routing_mode" {
-  description = "The network-wide routing mode to use. If set to REGIONAL, this network's cloud routers will only advertise routes with subnetworks of this network in the same region as the router. If set to GLOBAL, this network's cloud routers will advertise routes with all subnetworks of this network, across regions. Possible values are REGIONAL and GLOBAL."
+  description = "Modo de enrutamiento de la red (REGIONAL o GLOBAL)."
   type        = string
   default     = "REGIONAL"
 }
 
 variable "vpc_delete_default_routes_on_create" {
-  description = " If set to true, default routes (0.0.0.0/0) will be deleted immediately after network creation. Defaults to false."
+  description = "Si es true, las rutas por defecto (0.0.0.0/0) se eliminarán tras la creación de la red."
   type        = bool
   default     = false
 }
 
 variable "vpc_network_firewall_policy_enforcement_order" {
-  description = "The order in which firewall policies are enforced."
+  description = "Orden de aplicación de las políticas de firewall."
   type        = string
   default     = "AFTER_CLASSIC_FIREWALL"
 }

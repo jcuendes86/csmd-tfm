@@ -1,3 +1,7 @@
+# ==================================================================================
+# RECURSO: DATASET DE BIGQUERY
+# Crea un dataset en BigQuery para almacenar los datos.
+# ==================================================================================
 resource "google_bigquery_dataset" "dataset" {
   dataset_id                      = var.bq_dataset_id
   location                        = var.bq_dataset_location
@@ -7,6 +11,11 @@ resource "google_bigquery_dataset" "dataset" {
   delete_contents_on_destroy      = var.bq_dataset_delete_contents_on_destroy
 }
 
+# ==================================================================================
+# RECURSO: TABLA DE BIGQUERY
+# Crea una tabla dentro del dataset de BigQuery con un esquema predefinido para
+# los datos de los coches.
+# ==================================================================================
 resource "google_bigquery_table" "table" {
   project             = var.project_id
   dataset_id          = google_bigquery_dataset.dataset.dataset_id
@@ -15,6 +24,8 @@ resource "google_bigquery_table" "table" {
   friendly_name       = var.bq_table_friendly_name
   clustering          = var.bq_table_clustering
   deletion_protection = var.bq_table_deletion_protection
+
+  # Define el esquema de la tabla.
   schema = <<EOF
   [
     {
@@ -47,19 +58,16 @@ resource "google_bigquery_table" "table" {
       "type": "INTEGER",
       "mode": "NULLABLE"
     },
-
     {
       "name": "kms",
       "type": "INTEGER",
       "mode": "NULLABLE"
     },
-
     {
       "name": "power",
       "type": "INTEGER",
       "mode": "NULLABLE"
     },
-
     {
       "name": "doors",
       "type": "INTEGER",

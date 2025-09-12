@@ -1,11 +1,17 @@
-// Habilitar APIs
+# ==================================================================================
+# HABILITACIÓN DE APIS
+# Habilita las APIs de Google Cloud necesarias para el proyecto.
+# ==================================================================================
 module "apis" {
   source = "./modules/apis"
 
   project_id = var.project_id
 }
 
-// Configuracion red
+# ==================================================================================
+# CONFIGURACIÓN DE RED
+# Crea una red VPC personalizada para el proyecto.
+# ==================================================================================
 module "network" {
   source = "./modules/network"
 
@@ -18,7 +24,10 @@ module "network" {
   ]
 }
 
-// Crear bucket y subir el dataset de coches de segunda mano
+# ==================================================================================
+# BUCKET DE ALMACENAMIENTO (DATASET)
+# Crea un bucket en Cloud Storage y sube el dataset de coches.
+# ==================================================================================
 module "bucket_cars_dataset" {
   source = "./modules/storage"
 
@@ -36,7 +45,10 @@ module "bucket_cars_dataset" {
 
 }
 
-// Crear bucket para los templates de Dataflow
+# ==================================================================================
+# BUCKET DE ALMACENAMIENTO (PLANTILLAS DE DATAFLOW)
+# Crea un bucket para almacenar las plantillas de Dataflow.
+# ==================================================================================
 module "bucket_dataflow_templates" {
   source = "./modules/storage"
 
@@ -49,7 +61,11 @@ module "bucket_dataflow_templates" {
   ]
 }
 
-// Crear bucket para los trabajos en Dataflow
+# ==================================================================================
+# BUCKET DE ALMACENAMIENTO (TRABAJOS DE DATAFLOW)
+# Crea un bucket para los trabajos temporales y de "staging" de Dataflow.
+# Incluye una política de ciclo de vida para eliminar objetos antiguos.
+# ==================================================================================
 module "bucket_dataflow_jobs" {
   source = "./modules/storage"
 
@@ -70,7 +86,10 @@ module "bucket_dataflow_jobs" {
   ]
 }
 
-// Creacion de dataset y tabla de bigQuery
+# ==================================================================================
+# BIGQUERY
+# Crea un dataset y una tabla en BigQuery para almacenar los datos de ventas de coches.
+# ==================================================================================
 module "bigquey" {
   source = "./modules/bigquery"
 
@@ -84,7 +103,11 @@ module "bigquey" {
   ]
 }
 
-// Cuenta de servicio para trabajos en Dataflow
+# ==================================================================================
+# CUENTAS DE SERVICIO
+# ==================================================================================
+
+# Cuenta de servicio para los workers de Dataflow.
 module "sa-dataflow-worker" {
   source = "./modules/service-account"
 
@@ -104,7 +127,7 @@ module "sa-dataflow-worker" {
   ]
 }
 
-// Cuenta de servicio para Cloud Build
+# Cuenta de servicio para Cloud Build.
 module "sa-cloud-build" {
   source = "./modules/service-account"
 
@@ -129,7 +152,7 @@ module "sa-cloud-build" {
   ]
 }
 
-// Cuenta de servicio para Cloud Run
+# Cuenta de servicio para Cloud Run.
 module "sa-cloud-run" {
   source = "./modules/service-account"
 
@@ -151,7 +174,7 @@ module "sa-cloud-run" {
   ]
 }
 
-// Cuenta de servicio para API Gateway
+# Cuenta de servicio para API Gateway.
 module "sa-api-gateway" {
   source = "./modules/service-account"
 
@@ -169,7 +192,11 @@ module "sa-api-gateway" {
   ]
 }
 
-// Creacion del repositorio para la imagen Docker del pipeline de Dataflow
+# ==================================================================================
+# ARTIFACT REGISTRY
+# ==================================================================================
+
+# Repositorio para la imagen Docker del pipeline de Dataflow.
 module "artifact-registry" {
   source = "./modules/artifact-registry"
 
@@ -182,7 +209,7 @@ module "artifact-registry" {
   ]
 }
 
-// Creacion del repositorio para la imagen Docker de la API de prediccion
+# Repositorio para la imagen Docker de la API de predicción.
 module "artifact-registry-api" {
   source = "./modules/artifact-registry"
 
@@ -195,7 +222,11 @@ module "artifact-registry-api" {
   ]
 }
 
-// Creaccion del secret manager para las API de Cloud Run
+# ==================================================================================
+# SECRET MANAGER
+# ==================================================================================
+
+# Secreto para la configuración de la API en Cloud Run.
 module "sm_cr_secrets" {
   source = "./modules/secret-manager"
 
@@ -230,7 +261,10 @@ module "sm_cr_secrets" {
   ]
 }
 
-// Creacion del servicio de Cloud Run para la API de predicción de coches
+# ==================================================================================
+# CLOUD RUN
+# Despliega la API de predicción de precios de coches como un servicio de Cloud Run.
+# ==================================================================================
 module "cloud-run-cars-prediction-api" {
   source = "./modules/cloud-run"
 
@@ -258,7 +292,10 @@ module "cloud-run-cars-prediction-api" {
   ]
 }
 
-// Creacion del API Gateway para exponer la API de predicción
+# ==================================================================================
+# API GATEWAY
+# Expone la API de predicción a través de un API Gateway para securizarla.
+# ==================================================================================
 module "api-gateway" {
   source = "./modules/api-gateway"
 
@@ -277,6 +314,7 @@ module "api-gateway" {
   ]
 }
 
+# Pausa para esperar a que la configuración de la API se propague.
 resource "time_sleep" "wait_for_api_config" {
   create_duration = "15s"
   depends_on      = [
@@ -284,9 +322,14 @@ resource "time_sleep" "wait_for_api_config" {
   ]
 }
 
-# Token del provider ya autenticado
+# ==================================================================================
+# OBTENCIÓN DEL MANAGED SERVICE DE API GATEWAY
+# ==================================================================================
+
+# Obtiene el token de acceso del provider de Google.
 data "google_client_config" "default" {}
 
+# Realiza una petición HTTP para obtener los detalles de la API de API Gateway.
 data "http" "apigw_api" {
   url = "https://apigateway.googleapis.com/v1/projects/${var.project_id}/locations/global/apis/cars-prediction-api"
 
@@ -295,18 +338,18 @@ data "http" "apigw_api" {
     Accept        = "application/json"
   }
 
-  # Espera a que la ApiConfig quede registrada antes de consultar
   depends_on = [
     module.api-gateway
   ]
 }
 
-# Parseo del JSON para sacar el managedService
+# Extrae el nombre del "managed service" de la respuesta JSON.
 locals {
   apigw_api_body     = jsondecode(data.http.apigw_api.response_body)
   managed_service    = local.apigw_api_body.managedService
 }
 
+# Habilita el "managed service" en el proyecto.
 resource "google_project_service" "enable_managed_service" {
   project            = var.project_id
   service            = local.managed_service
@@ -321,7 +364,10 @@ resource "google_project_service" "enable_managed_service" {
   }
 }
 
-// Creacion de la API Key restringida al managed service del API Gateway
+# ==================================================================================
+# API KEY
+# Crea una API Key restringida al "managed service" del API Gateway.
+# ==================================================================================
 module "gateway_key" {
   source = "./modules/api-keys"
 
@@ -340,7 +386,10 @@ module "gateway_key" {
   ]
 }
 
-// Creaccion del secret manager para almacenar la API Key del API Gateway
+# ==================================================================================
+# SECRET MANAGER (API KEY)
+# Almacena la API Key del API Gateway en Secret Manager.
+# ==================================================================================
 module "sm_gateway_key" {
   source = "./modules/secret-manager"
 
@@ -356,7 +405,11 @@ module "sm_gateway_key" {
   ]
 }
 
-// Creacion del trigger en Cloud Build para construir la imagen Docker del pipeline de Dataflow
+# ==================================================================================
+# CLOUD BUILD TRIGGERS
+# ==================================================================================
+
+# Trigger para construir la imagen Docker del pipeline de Dataflow.
 module "cloud-build-dataflow-build-image" {
   source = "./modules/cloud-build"
 
@@ -398,7 +451,7 @@ module "cloud-build-dataflow-build-image" {
   ]
 }
 
-# Crear el trigger de Cloud Build para ejecutar el job de Dataflow
+# Trigger para ejecutar el job de Dataflow.
 module "cloud-build-dataflow-run-job" {
   source = "./modules/cloud-build-manual"
 
@@ -438,7 +491,7 @@ module "cloud-build-dataflow-run-job" {
   ]
 }
 
-// Creacion del trigger en Cloud Build para construir y subir la imagen Docker de la API
+# Trigger para construir y subir la imagen Docker de la API.
 module "cloud-build-cars-prediction-api" {
   source = "./modules/cloud-build"
 
@@ -472,7 +525,10 @@ module "cloud-build-cars-prediction-api" {
   ]
 }
 
-// Creacion del modelo de predicción en BigQuery ML
+# ==================================================================================
+# BIGQUERY ML MODEL
+# Entrena un modelo de regresión (Boosted Tree) en BigQuery ML para predecir el precio de los coches.
+# ==================================================================================
 module "train_cars_prediction_model" {
   source = "./modules/bigquery-model"
 
@@ -493,13 +549,13 @@ module "train_cars_prediction_model" {
         MAX_PARALLEL_TRIALS=3,
         HPARAM_TUNING_OBJECTIVES=['R2_SCORE'],
 
-        -- Espacio de búsqueda
+        -- Espacio de búsqueda de hiperparámetros
         LEARN_RATE=HPARAM_RANGE(0.02, 0.20),
         MAX_TREE_DEPTH=HPARAM_CANDIDATES([4,6,8,10,12]),
         L1_REG=HPARAM_RANGE(0.0, 0.5),
         L2_REG=HPARAM_RANGE(0.5, 5.0),
 
-        -- Entrenamiento / split
+        -- Configuración del entrenamiento
         EARLY_STOP=TRUE,
         MAX_ITERATIONS=600
       ) AS
@@ -510,13 +566,10 @@ module "train_cars_prediction_model" {
         `${var.project_id}.${module.bigquey.dataset}.${module.bigquey.table}`
     EOT
 
-  # Es importante deshabilitar el uso de caché para las consultas CREATE MODEL
-  # para asegurar que el entrenamiento se ejecute siempre que se apliquen los cambios.
+  # Deshabilita la caché para asegurar que el entrenamiento se ejecute siempre.
   bq_job_query_cache = false
 
-  # Para las consultas DDL como CREATE MODEL, es necesario especificar que no hay
-  # una disposición de creación o escritura, ya que no se está creando una tabla de destino.
-  # Esto evita el error "Cannot set create disposition...".
+  # Especifica que no hay disposición de creación o escritura para consultas DDL.
   bq_job_create_disposition = ""
   bq_job_write_disposition  = ""
 

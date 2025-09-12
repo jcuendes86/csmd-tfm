@@ -1,5 +1,8 @@
+# ==================================================================================
+# SALIDA: URL DEL API GATEWAY
+# Expone la URL por defecto del API Gateway creado.
+# ==================================================================================
 output "url" {
- description = "API Gateway URL"
- value       = google_api_gateway_gateway.api_gateway.default_hostname
-  
+  description = "URL del API Gateway."
+  value       = google_api_gateway_gateway.api_gateway.default_hostname
 }

@@ -1,41 +1,45 @@
-###################
-#### REQUIRED #####
-###################
+# ==================================================================================
+# VARIABLES PARA EL MÓDULO SECRET MANAGER
+# ==================================================================================
+
+# ---------------------------------
+# Variables Requeridas
+# ---------------------------------
 
 variable "project_id" {
- description = "The ID of the project in which the resource belongs."
- type        = string
+  description = "ID del proyecto de Google Cloud al que pertenece el recurso."
+  type        = string
 }
 
 variable "secret_id" {
- description = "Secret ID. This must be unique within the project."
- type        = string
+  description = "ID del secreto. Debe ser único dentro del proyecto."
+  type        = string
 }
 
-###################
-#### OPTIONAL #####
-###################
+# ---------------------------------
+# Variables Opcionales
+# ---------------------------------
 
 variable "sm_version_data_template" {
- description = "Template de secretos a añadir. Opcional"
- default     = null
+  description = "Plantilla con los datos que se añadirán como una nueva versión del secreto."
+  default     = null
 }
 
 variable "sm_members_admins" {
- description = "List of members (SA, Groups, Users) to atach admin role"
- type        = list(string)
- default     = []
+  description = "Lista de miembros (cuentas de servicio, grupos, usuarios) a los que se les asignará el rol de administrador."
+  type        = list(string)
+  default     = []
 }
 
 variable "sm_iam_role" {
- description = "Specific role to binding to Secret Manager resource. Default value is roles/secretmanager.secretAccessor."
- type        = string
- default     = "roles/secretmanager.secretAccessor"
+  description = "Rol de IAM específico que se asignará al recurso de Secret Manager."
+  type        = string
+  default     = "roles/secretmanager.secretAccessor"
 }
 
 variable "sm_replication_location" {
- description = "The canonical IDs of the location to replicate data. For example: europe-west1."
- type        = string
- default     = null
+  description = "Ubicación para la replicación de los datos del secreto."
+  type        = string
+  default     = null
 }
 

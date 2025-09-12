@@ -1,101 +1,104 @@
-###################
-#### REQUIRED #####
-###################
+# ==================================================================================
+# VARIABLES PARA EL MÓDULO STORAGE
+# ==================================================================================
+
+# ---------------------------------
+# Variables Requeridas
+# ---------------------------------
 
 variable "project_id" {
-  description = "Project ID"
+  description = "ID del proyecto de Google Cloud."
   type        = string
 }
 
 variable "bucket_name" {
-  description = "The name of the bucket"
+  description = "Nombre del bucket de Cloud Storage."
   type        = string
 }
 
 variable "bucket_location" {
-  description = "The GCS location. It can be Regional, global, etc."
+  description = "Ubicación del bucket (regional, multirregional, etc.)."
   type        = string
 }
 
-
-###################
-#### OPTIONAL #####
-###################
+# ---------------------------------
+# Variables Opcionales
+# ---------------------------------
 
 variable "bucket_force_destroy" {
-  description = "Default false. When deleting a bucket, this boolean option will delete all contained objects. If you try to delete a bucket that contains objects, Terraform will fail that run."
+  description = "Si es true, se eliminarán todos los objetos del bucket al destruirlo."
   type        = bool
   default     = true
 }
 
 variable "bucket_uniform_bucket_level_access" {
-  description = "Default: true. Enables Uniform bucket-level access access to a bucket."
+  description = "Habilita el acceso uniforme a nivel de bucket."
   type        = bool
   default     = true
 }
 
 variable "bucket_public_access_prevention" {
-  description = "Prevents public access to a bucket. Acceptable values are inherited or enforced. If inherited, the bucket uses public access prevention. only if the bucket is subject to the public access prevention organization policy constraint. Defaults to inherited."
+  description = "Previene el acceso público al bucket. Valores: 'inherited' o 'enforced'."
   type        = string
   default     = "inherited"
 }
 
 variable "bucket_class" {
-  description = "Default: 'STANDARD'. The Storage Class of the new bucket. Supported values include: STANDARD, MULTI_REGIONAL, REGIONAL, NEARLINE, COLDLINE, ARCHIVE."
+  description = "Clase de almacenamiento del bucket (STANDARD, NEARLINE, etc.)."
   type        = string
   default     = "STANDARD"
 }
 
 variable "bucket_with_soft_delete" {
-  description = "Default: false. Enables Soft delete access to a bucket."
-  type    = bool
-  default = false
+  description = "Habilita la política de eliminación suave (soft delete) en el bucket."
+  type        = bool
+  default     = false
 }
 
 variable "bucket_retention_duration_seconds" {
-  description = "Duration in seconds of the retention policy."
-  type    = number
-  default = 0
+  description = "Duración en segundos de la política de retención para la eliminación suave."
+  type        = number
+  default     = 0
 }
 
 variable "bucket_with_lifecycle_rule" {
-  description = "Default: false. Enables Lifecycle Rule access to a bucket."
-  type    = bool
-  default = false
+  description = "Habilita una regla de ciclo de vida para los objetos del bucket."
+  type        = bool
+  default     = false
 }
 
 variable "bucket_lifecycle_rule_action_type" {
-  description = "A lifecycle rule action type"
-  type    = string
-  default = ""
+  description = "Tipo de acción para la regla de ciclo de vida (por ejemplo, 'Delete')."
+  type        = string
+  default     = ""
 }
 
 variable "bucket_lifecycle_rule_age" {
-  description = "Age in days"
-  type    = number
-  default = 0
+  description = "Antigüedad en días para que se aplique la regla de ciclo de vida."
+  type        = number
+  default     = 0
 }
 
 variable "bucket_lifecycle_rule_matches_prefix" {
-  description = "Regex expression to match objects"
-  type    = list(string)
-  default = []
+  description = "Prefijos que deben coincidir para que se aplique la regla de ciclo de vida."
+  type        = list(string)
+  default     = []
 }
 
 variable "bucket_with_object" {
-  description = "Default: false. Enables upload object to bucket"
+  description = "Si es true, se subirá un objeto al bucket."
   type        = bool
-  default = false
+  default     = false
 }
 
 variable "bucket_object_name" {
-  description = "The name of the object"
+  description = "Nombre del objeto que se subirá al bucket."
   type        = string
   default     = ""
 }
 
 variable "bucket_object_source" {
-  description = "The source of the object"
+  description = "Ruta local del fichero que se subirá como objeto."
   type        = string
   default     = ""
 }

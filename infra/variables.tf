@@ -1,32 +1,42 @@
-#####################################
-##         Global Variables        ##
-#####################################
+# ==================================================================================
+# VARIABLES GLOBALES
+# Definición de las variables utilizadas en la configuración de Terraform.
+# ==================================================================================
+
+# ---------------------------------
+# Configuración del Proyecto
+# ---------------------------------
+
 variable "project_id" {
-  description = "The ID of the Google Cloud project to use."
+  description = "ID del proyecto de Google Cloud donde se desplegarán los recursos."
   type        = string
   default     = "csmd-tfm-jcuendes"
 }
 
 variable "region" {
-  description = "The region to deploy resources in."
+  description = "Región donde se desplegarán los recursos de Google Cloud."
   type        = string
   default     = "europe-west1"
 }
 
 variable "zone" {
-  description = "The zone to deploy resources in."
+  description = "Zona específica dentro de la región para el despliegue de recursos."
   type        = string
   default     = "europe-west1-b"
 }
 
+# ---------------------------------
+# Habilitación de Recursos
+# ---------------------------------
+
 variable "enable_cb_creation" {
-  description = "Flag to enable or disable the creation of Cloud Build triggers."
+  description = "Flag para habilitar o deshabilitar la creación de los triggers de Cloud Build."
   type        = bool
   default     = false
 }
 
 variable "enable_model_creation" {
-  description = "Flag to enable or disable the creation of the BigQuery ML model."
+  description = "Flag para habilitar o deshabilitar la creación del modelo de BigQuery ML."
   type        = bool
   default     = false
 }
